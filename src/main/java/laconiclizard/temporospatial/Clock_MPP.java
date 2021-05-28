@@ -10,13 +10,16 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 // adapted from code in ModelPredicateProviderRegistry for CLOCK
 public class Clock_MPP implements ModelPredicateProvider {
 
-    private static final Set<ItemStack> SWINGLESS_CLOCKS = ConcurrentHashMap.newKeySet();
+    private static final Set<ItemStack> SWINGLESS_CLOCKS = Collections.synchronizedSet(
+            Collections.newSetFromMap(new IdentityHashMap<>()));
+    public static boolean ALL_SWINGLESS = false;  // if true, then all clocks will be swingless
 
     public static final ItemStack NORMAL_CLOCK = new ItemStack(Items.CLOCK);
     public static final ItemStack SWINGLESS_CLOCK = new ItemStack(Items.CLOCK);
@@ -35,9 +38,11 @@ public class Clock_MPP implements ModelPredicateProvider {
 
     // ----- ----- implementation ----- -----
 
-    private double time;
-    private double step;
-    private long lastTick;
+    // track swinging and non-swinging values separately
+    // (not in separate classes bc. most code is identical)
+    private double timeSwinging, timeSwingless;
+    private double step;  // only relevant to swinging clocks
+    private long lastTickSwinging, lastTickSwingless;
 
     public float call(ItemStack itemStack, @Nullable ClientWorld clientWorld, @Nullable LivingEntity livingEntity) {
         Entity entity = livingEntity != null ? livingEntity : itemStack.getHolder();
@@ -58,7 +63,7 @@ public class Clock_MPP implements ModelPredicateProvider {
                     e = Math.random();
                 }
 
-                e = this.getTime(clientWorld, e, SWINGLESS_CLOCKS.contains(itemStack));
+                e = this.getTime(clientWorld, e, ALL_SWINGLESS || SWINGLESS_CLOCKS.contains(itemStack));
                 return (float) e;
             }
         }
@@ -66,19 +71,24 @@ public class Clock_MPP implements ModelPredicateProvider {
 
     private double getTime(World world, double skyAngle, boolean swingless) {
         long wt = world.getTime();
-        if (wt != this.lastTick) {
-            this.lastTick = wt;
-            double d = skyAngle - this.time;
-            d = MathHelper.floorMod(d + 0.5D, 1.0D) - 0.5D;
-            if (!swingless) {
-                this.step += d * 0.1d;
-                this.step *= 0.9D;
-            } else {
-                this.step = d;
+        if (swingless) {
+            if (wt != this.lastTickSwingless) {
+                this.lastTickSwingless = wt;
+                double d = skyAngle - this.timeSwingless;
+                d = MathHelper.floorMod(d + .5, 1) - .5;
+                this.timeSwingless = MathHelper.floorMod(this.timeSwingless + d, 1);
             }
-            this.time = MathHelper.floorMod(this.time + this.step, 1.0D);
+            return this.timeSwingless;
+        } else {
+            if (wt != this.lastTickSwinging) {
+                this.lastTickSwinging = wt;
+                double d = skyAngle - this.timeSwinging;
+                d = MathHelper.floorMod(d + .5, 1) - .5;
+                this.step += d * .1;
+                this.step *= .9;
+                this.timeSwinging = MathHelper.floorMod(this.timeSwinging + this.step, 1);
+            }
+            return this.timeSwinging;
         }
-
-        return this.time;
     }
 }

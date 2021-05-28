@@ -13,4 +13,6 @@ public class TSConfig implements ConfigData {
     public int clockHE_X, clockHE_Y;
     public boolean clockHE_preventSwing = true;
 
+    public boolean allClocks_preventSwing = false;
+
 }

@@ -19,10 +19,13 @@ public class Temporospatial implements ModInitializer {
         ModelPredicateProviderRegistry_Mixin.invokeRegister(Items.CLOCK, new Identifier("time"), new Clock_MPP());
         // config stuff
         CONFIG_HOLDER.registerLoadListener((holder, config) -> {
+            // clock hud element
             CLOCK_HE.setPos(config.clockHE_X, config.clockHE_Y);
             CLOCK_HE.setEnabled(config.clockHE_enabled);
             CLOCK_HE.scale = config.clockHE_scale;
             CLOCK_HE.setPreventSwing(config.clockHE_preventSwing);
+            // misc
+            Clock_MPP.ALL_SWINGLESS = config.allClocks_preventSwing;
             return ActionResult.PASS;
         });
         CONFIG_HOLDER.load();
