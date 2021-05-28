@@ -23,8 +23,13 @@
     "temporospatial.mixins.json"
   ],
   "depends": {
+    "cloth-config2": ">=4.11.26",
+    "hudelements": ">=1.1.0",
     "fabricloader": ">=0.11.3",
     "fabric": "*",
     "minecraft": "1.16.5"
+  },
+  "recommends": {
+    "modmenu": ">=1.16.9"
   }
 }
