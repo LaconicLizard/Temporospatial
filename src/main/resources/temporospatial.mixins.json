@@ -4,6 +4,7 @@
   "package": "laconiclizard.temporospatial.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "ModelPredicateProviderRegistry_Mixin"
   ],
   "client": [
   ],

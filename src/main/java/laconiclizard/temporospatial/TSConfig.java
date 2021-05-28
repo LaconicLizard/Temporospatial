@@ -8,8 +8,9 @@ import me.shedaniel.autoconfig.annotation.ConfigEntry;
 public class TSConfig implements ConfigData {
 
     public boolean clockHE_enabled = true;
-    public float clockHE_scale = 5f;
+    public float clockHE_scale = 1f;
     @ConfigEntry.Gui.Excluded
     public int clockHE_X, clockHE_Y;
+    public boolean clockHE_preventSwing = true;
 
 }
