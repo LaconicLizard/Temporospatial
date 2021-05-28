@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "temporospatial",
+  "version": "${version}",
+  "name": "Temporospatial",
+  "description": "Client-sided Clock- and Compass-related utilities.",
+  "authors": [
+    "LaconicLizard"
+  ],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/temporospatial/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "laconiclizard.temporospatial.client.TemporospatialClient"
+    ],
+    "main": [
+      "laconiclizard.temporospatial.Temporospatial"
+    ]
+  },
+  "mixins": [
+    "temporospatial.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.11.3",
+    "fabric": "*",
+    "minecraft": "1.16.5"
+  }
+}
