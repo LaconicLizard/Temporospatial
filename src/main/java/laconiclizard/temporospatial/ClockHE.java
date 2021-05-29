@@ -11,8 +11,17 @@ public class ClockHE extends HudElement {
     private final ItemStack clockStack = new ItemStack(Items.CLOCK);
     public float scale;
 
-    public ClockHE() {
+    public final boolean realTime;
+
+    public ClockHE(boolean realTime) {
         super(0, 0);
+        this.realTime = realTime;
+        if (realTime) {
+            Clock_MPP.makeRealtime(clockStack);
+            setPreventSwing(true);
+            setWorksInNether(true);
+            setWorksInEnd(true);
+        }
     }
 
     public void setPreventSwing(boolean preventSwing) {
@@ -41,8 +50,13 @@ public class ClockHE extends HudElement {
 
     @Override public void save() {
         TSConfig config = Temporospatial.CONFIG_HOLDER.getConfig();
-        config.clockHE_X = getX();
-        config.clockHE_Y = getY();
+        if (realTime) {
+            config.realtimeClockHE_X = getX();
+            config.realtimeClockHE_Y = getY();
+        } else {
+            config.clockHE_X = getX();
+            config.clockHE_Y = getY();
+        }
         Temporospatial.CONFIG_HOLDER.save();
     }
 

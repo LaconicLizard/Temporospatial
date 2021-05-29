@@ -26,6 +26,12 @@ public class TSConfig implements ConfigData {
     public int numericClockHE_borderColor = 0x40ffffff;
     public int numericClockHE_borderThickness = 1;
 
+    // realtime clock HE
+    public boolean realtimeClockHE_enabled = true;
+    public float realtimeClockHE_scale = 1f;
+    @ConfigEntry.Gui.Excluded
+    public int realtimeClockHE_X, realtimeClockHE_Y;
+
     // numeric realtime clock HE
     public boolean numericRealtimeClockHE_enabled = true;
     public float numericRealtimeClockHE_scale = 1f;

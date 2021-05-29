@@ -13,9 +13,10 @@ public class Temporospatial implements ModInitializer {
 
     public static final String MOD_ID = "temporospatial";
     public static final ConfigHolder<TSConfig> CONFIG_HOLDER = AutoConfig.register(TSConfig.class, GsonConfigSerializer::new);
-    public static final ClockHE CLOCK_HE = new ClockHE();
+    public static final ClockHE CLOCK_HE = new ClockHE(false);
     public static final NumericClockHE NUMERIC_CLOCK_HE = new NumericClockHE(false);
 
+    public static final ClockHE REALTIME_CLOCK_HE = new ClockHE(true);
     public static final NumericClockHE NUMERIC_REALTIME_CLOCK_HE = new NumericClockHE(true);
 
     @Override public void onInitialize() {
@@ -37,6 +38,10 @@ public class Temporospatial implements ModInitializer {
             NUMERIC_CLOCK_HE.backgroundColor = config.numericClockHE_backgroundColor;
             NUMERIC_CLOCK_HE.borderColor = config.numericClockHE_borderColor;
             NUMERIC_CLOCK_HE.borderThickness = config.numericClockHE_borderThickness;
+            // realtime clock hud element
+            REALTIME_CLOCK_HE.setPos(config.realtimeClockHE_X, config.realtimeClockHE_Y);
+            REALTIME_CLOCK_HE.setEnabled(config.realtimeClockHE_enabled);
+            REALTIME_CLOCK_HE.scale = config.realtimeClockHE_scale;
             // numeric realtime clock hud element
             NUMERIC_REALTIME_CLOCK_HE.setPos(config.numericRealtimeClockHE_X, config.numericRealtimeClockHE_Y);
             NUMERIC_REALTIME_CLOCK_HE.setEnabled(config.numericRealtimeClockHE_enabled);

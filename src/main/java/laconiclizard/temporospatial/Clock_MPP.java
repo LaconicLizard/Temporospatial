@@ -12,6 +12,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.LocalTime;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.Set;
@@ -31,6 +32,9 @@ public class Clock_MPP implements ModelPredicateProvider {
     private static final Set<ItemStack> END_CLOCKS = Collections.synchronizedSet(
             Collections.newSetFromMap(new IdentityHashMap<>()));
     public static boolean ALL_WORK_IN_END;
+    private static final Set<ItemStack> REALTIME_CLOCKS = Collections.synchronizedSet(
+            Collections.newSetFromMap(new IdentityHashMap<>()));
+    // no global "ALL_REALTIME" variable, as that doesn't really make sense
 
     public static final ItemStack NORMAL_CLOCK = new ItemStack(Items.CLOCK);
     public static final ItemStack PERFECT_CLOCK = new ItemStack(Items.CLOCK);
@@ -65,6 +69,14 @@ public class Clock_MPP implements ModelPredicateProvider {
         END_CLOCKS.remove(stack);
     }
 
+    public static void makeRealtime(ItemStack stack) {
+        REALTIME_CLOCKS.add(stack);
+    }
+
+    public static void stopRealtime(ItemStack stack) {
+        REALTIME_CLOCKS.remove(stack);
+    }
+
     // ----- ----- implementation ----- -----
 
     public static boolean swings(ItemStack stack) {
@@ -79,8 +91,12 @@ public class Clock_MPP implements ModelPredicateProvider {
         return ALL_WORK_IN_END || END_CLOCKS.contains(stack);
     }
 
+    public static boolean isRealtime(ItemStack stack) {
+        return REALTIME_CLOCKS.contains(stack);
+    }
+
     public static boolean isNormal(ItemStack stack) {
-        return swings(stack) && !worksInNether(stack) && !worksInEnd(stack);
+        return swings(stack) && !worksInNether(stack) && !worksInEnd(stack) && !isRealtime(stack);
     }
 
     // track swinging and non-swinging values separately
@@ -105,26 +121,36 @@ public class Clock_MPP implements ModelPredicateProvider {
                 return 0.0F;
             } else {
                 double e;
-
-                if (clientWorld.getDimension().isNatural()) {
-                    e = clientWorld.getSkyAngle(1.0F);
+                boolean isRealtime = isRealtime(itemStack);
+                if (isRealtime) {
+                    LocalTime now = LocalTime.now();
+                    int t = now.getHour() * (60 * 60) + now.getMinute() * 60 + now.getSecond();
+                    e = t / (24 * 60 * 60d);
                 } else {
-                    Identifier did = clientWorld.getRegistryKey().getValue();
-                    if ((did.equals(Util.THE_NETHER_ID) && worksInNether(itemStack))
-                            || (did.equals(Util.THE_END_ID) && worksInEnd(itemStack))) {
-                        e = Util.unfixedSkyAngle(clientWorld.getLunarTime());
+                    if (clientWorld.getDimension().isNatural()) {
+                        e = clientWorld.getSkyAngle(1.0F);
                     } else {
-                        e = Math.random();
+                        Identifier did = clientWorld.getRegistryKey().getValue();
+                        if ((did.equals(Util.THE_NETHER_ID) && worksInNether(itemStack))
+                                || (did.equals(Util.THE_END_ID) && worksInEnd(itemStack))) {
+                            e = Util.unfixedSkyAngle(clientWorld.getLunarTime());
+                        } else {
+                            e = Math.random();
+                        }
                     }
                 }
 
-                e = this.getTime(clientWorld, e, swings(itemStack));
+                e = this.getTime(clientWorld, e, swings(itemStack), isRealtime);
                 return (float) e;
             }
         }
     }
 
-    private double getTime(World world, double skyAngle, boolean swingless) {
+    private double getTime(World world, double skyAngle, boolean swingless, boolean isRealtime) {
+        if (isRealtime) {
+            return MathHelper.floorMod(skyAngle - .5, 1);
+        }
+        // minecraft time
         long wt = world.getTime();
         if (swingless) {
             if (wt != this.lastTickSwingless) {
