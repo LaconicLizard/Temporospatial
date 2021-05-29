@@ -1,5 +1,6 @@
-package laconiclizard.temporospatial;
+package laconiclizard.temporospatial.clock;
 
+import laconiclizard.temporospatial.Util;
 import net.minecraft.client.item.ModelPredicateProvider;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.world.ClientWorld;

@@ -1,5 +1,8 @@
 package laconiclizard.temporospatial;
 
+import laconiclizard.temporospatial.clock.ClockHE;
+import laconiclizard.temporospatial.clock.Clock_MPP;
+import laconiclizard.temporospatial.clock.NumericClockHE;
 import laconiclizard.temporospatial.mixin.ModelPredicateProviderRegistry_Mixin;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.ConfigHolder;

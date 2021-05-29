@@ -1,6 +1,9 @@
-package laconiclizard.temporospatial;
+package laconiclizard.temporospatial.clock;
 
 import laconiclizard.hudelements.api.HudElement;
+import laconiclizard.temporospatial.TSConfig;
+import laconiclizard.temporospatial.Temporospatial;
+import laconiclizard.temporospatial.Util;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
