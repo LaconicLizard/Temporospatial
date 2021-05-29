@@ -35,6 +35,7 @@ public class Clock_MPP implements ModelPredicateProvider {
     private static final Set<ItemStack> REALTIME_CLOCKS = Collections.synchronizedSet(
             Collections.newSetFromMap(new IdentityHashMap<>()));
     // no global "ALL_REALTIME" variable, as that doesn't really make sense
+    public static boolean ALL_WORK_EVERYWHERE;
 
     public static final ItemStack NORMAL_CLOCK = new ItemStack(Items.CLOCK);
     public static final ItemStack PERFECT_CLOCK = new ItemStack(Items.CLOCK);
@@ -131,7 +132,7 @@ public class Clock_MPP implements ModelPredicateProvider {
                         e = clientWorld.getSkyAngle(1.0F);
                     } else {
                         Identifier did = clientWorld.getRegistryKey().getValue();
-                        if ((did.equals(Util.THE_NETHER_ID) && worksInNether(itemStack))
+                        if (ALL_WORK_EVERYWHERE || (did.equals(Util.THE_NETHER_ID) && worksInNether(itemStack))
                                 || (did.equals(Util.THE_END_ID) && worksInEnd(itemStack))) {
                             e = Util.unfixedSkyAngle(clientWorld.getLunarTime());
                         } else {

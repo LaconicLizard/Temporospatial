@@ -47,5 +47,6 @@ public class TSConfig implements ConfigData {
     public boolean allClocks_preventSwing = false;
     public boolean allClocks_workInNether = false;
     public boolean allClocks_workInEnd = false;
+    public boolean allClocks_workEverywhere = false;
 
 }

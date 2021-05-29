@@ -55,6 +55,7 @@ public class Temporospatial implements ModInitializer {
             Clock_MPP.ALL_SWINGLESS = config.allClocks_preventSwing;
             Clock_MPP.ALL_WORK_IN_NETHER = config.allClocks_workInNether;
             Clock_MPP.ALL_WORK_IN_END = config.allClocks_workInEnd;
+            Clock_MPP.ALL_WORK_EVERYWHERE = config.allClocks_workEverywhere;
             return ActionResult.PASS;
         });
         CONFIG_HOLDER.load();
