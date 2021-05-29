@@ -47,12 +47,14 @@ public class ClockHE extends HudElement {
         TSConfig config = Temporospatial.CONFIG_HOLDER.getConfig();
         config.clockHE_X = getX();
         config.clockHE_Y = getY();
+        Temporospatial.CONFIG_HOLDER.save();
     }
 
     @Override public void render(MatrixStack matrices, float tickDelta) {
-        Util.scaleAbout(getX(), getY(), 0, scale, scale, 1);
-        MinecraftClient.getInstance().getItemRenderer().renderInGuiWithOverrides(clockStack, getX(), getY());
-        Util.scaleAbout(getX(), getY(), 0, 1 / scale, 1 / scale, 1);
+        int x = getX(), y = getY();
+        Util.scaleAbout(x, y, 0, scale, scale, 1);
+        MinecraftClient.getInstance().getItemRenderer().renderInGuiWithOverrides(clockStack, x, y);
+        Util.scaleAbout(x, y, 0, 1 / scale, 1 / scale, 1);
     }
 
     @Override public int getWidth() {

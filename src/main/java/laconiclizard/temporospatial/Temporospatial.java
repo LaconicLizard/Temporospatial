@@ -14,6 +14,7 @@ public class Temporospatial implements ModInitializer {
     public static final String MOD_ID = "temporospatial";
     public static final ConfigHolder<TSConfig> CONFIG_HOLDER = AutoConfig.register(TSConfig.class, GsonConfigSerializer::new);
     public static final ClockHE CLOCK_HE = new ClockHE();
+    public static final NumericClockHE NUMERIC_CLOCK_HE = new NumericClockHE();
 
     @Override public void onInitialize() {
         ModelPredicateProviderRegistry_Mixin.invokeRegister(Items.CLOCK, new Identifier("time"), new Clock_MPP());
@@ -26,6 +27,14 @@ public class Temporospatial implements ModInitializer {
             CLOCK_HE.setPreventSwing(config.clockHE_preventSwing);
             CLOCK_HE.setWorksInNether(config.clockHE_worksInNether);
             CLOCK_HE.setWorksInEnd(config.clockHE_worksInEnd);
+            // numeric clock hud element
+            NUMERIC_CLOCK_HE.setPos(config.numericClockHE_X, config.numericClockHE_Y);
+            NUMERIC_CLOCK_HE.setEnabled(config.numericClockHE_enabled);
+            NUMERIC_CLOCK_HE.scale = config.numericClockHE_scale;
+            NUMERIC_CLOCK_HE.textColor = config.numericClockHE_textColor;
+            NUMERIC_CLOCK_HE.backgroundColor = config.numericClockHE_backgroundColor;
+            NUMERIC_CLOCK_HE.borderColor = config.numericClockHE_borderColor;
+            NUMERIC_CLOCK_HE.borderThickness = config.numericClockHE_borderThickness;
             // misc
             Clock_MPP.ALL_SWINGLESS = config.allClocks_preventSwing;
             Clock_MPP.ALL_WORK_IN_NETHER = config.allClocks_workInNether;

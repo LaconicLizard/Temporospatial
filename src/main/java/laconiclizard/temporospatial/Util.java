@@ -1,7 +1,10 @@
 package laconiclizard.temporospatial;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.world.ClientWorld;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -15,9 +18,19 @@ public class Util {
 
     /** Scale the world about x,y,z. */
     public static void scaleAbout(double x, double y, double z, double xs, double ys, double zs) {
+        //noinspection deprecation
         RenderSystem.translated(x, y, z);
+        //noinspection deprecation
         RenderSystem.scaled(xs, ys, zs);
+        //noinspection deprecation
         RenderSystem.translated(-x, -y, -z);
+    }
+
+    /** Scale stack about x,y,z. */
+    public static void scaleAbout(MatrixStack stack, double x, double y, double z, float xs, float ys, float zs) {
+        stack.translate(x, y, z);
+        stack.scale(xs, ys, zs);
+        stack.translate(-x, -y, -z);
     }
 
     /** Sky angle of a world, bypassing the fixedTime check. */
@@ -38,6 +51,14 @@ public class Util {
             }
         }
         return result;
+    }
+
+    /** Draw a border around the defined rectangle. */
+    public static void drawBorder(MatrixStack matrices, int x, int y, int w, int h, int thickness, int color) {
+        DrawableHelper.fill(matrices, x - thickness, y - thickness, x, y + h + thickness, color);
+        DrawableHelper.fill(matrices, x + w, y - thickness, x + w + thickness, y + h + thickness, color);
+        DrawableHelper.fill(matrices, x, y - thickness, x + w, y, color);
+        DrawableHelper.fill(matrices, x, y + h, x + w, y + h + thickness, color);
     }
 
 }

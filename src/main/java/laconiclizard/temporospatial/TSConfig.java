@@ -19,4 +19,13 @@ public class TSConfig implements ConfigData {
     public boolean allClocks_workInNether = false;
     public boolean allClocks_workInEnd = false;
 
+    public boolean numericClockHE_enabled = true;
+    public float numericClockHE_scale = 1f;
+    @ConfigEntry.Gui.Excluded
+    public int numericClockHE_X, numericClockHE_Y;
+    public int numericClockHE_textColor = 0xffffff;
+    public int numericClockHE_backgroundColor = 0x40000000;
+    public int numericClockHE_borderColor = 0x40ffffff;
+    public int numericClockHE_borderThickness = 1;
+
 }
