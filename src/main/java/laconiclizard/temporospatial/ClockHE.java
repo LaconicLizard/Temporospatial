@@ -11,8 +11,8 @@ public class ClockHE extends HudElement {
     private final ItemStack clockStack = new ItemStack(Items.CLOCK);
     public float scale;
 
-    {
-        setPreventSwing(false);
+    public ClockHE() {
+        super(0, 0);
     }
 
     public void setPreventSwing(boolean preventSwing) {
@@ -37,10 +37,6 @@ public class ClockHE extends HudElement {
         } else {
             Clock_MPP.freeFromWorkingInEnd(clockStack);
         }
-    }
-
-    public ClockHE() {
-        super(0, 0);
     }
 
     @Override public void save() {

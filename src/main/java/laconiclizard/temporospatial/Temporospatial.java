@@ -14,7 +14,9 @@ public class Temporospatial implements ModInitializer {
     public static final String MOD_ID = "temporospatial";
     public static final ConfigHolder<TSConfig> CONFIG_HOLDER = AutoConfig.register(TSConfig.class, GsonConfigSerializer::new);
     public static final ClockHE CLOCK_HE = new ClockHE();
-    public static final NumericClockHE NUMERIC_CLOCK_HE = new NumericClockHE();
+    public static final NumericClockHE NUMERIC_CLOCK_HE = new NumericClockHE(false);
+
+    public static final NumericClockHE NUMERIC_REALTIME_CLOCK_HE = new NumericClockHE(true);
 
     @Override public void onInitialize() {
         ModelPredicateProviderRegistry_Mixin.invokeRegister(Items.CLOCK, new Identifier("time"), new Clock_MPP());
@@ -35,6 +37,15 @@ public class Temporospatial implements ModInitializer {
             NUMERIC_CLOCK_HE.backgroundColor = config.numericClockHE_backgroundColor;
             NUMERIC_CLOCK_HE.borderColor = config.numericClockHE_borderColor;
             NUMERIC_CLOCK_HE.borderThickness = config.numericClockHE_borderThickness;
+            // numeric realtime clock hud element
+            NUMERIC_REALTIME_CLOCK_HE.setPos(config.numericRealtimeClockHE_X, config.numericRealtimeClockHE_Y);
+            NUMERIC_REALTIME_CLOCK_HE.setEnabled(config.numericRealtimeClockHE_enabled);
+            NUMERIC_REALTIME_CLOCK_HE.scale = config.numericRealtimeClockHE_scale;
+            NUMERIC_REALTIME_CLOCK_HE.textColor = config.numericRealtimeClockHE_textColor;
+            NUMERIC_REALTIME_CLOCK_HE.backgroundColor = config.numericRealtimeClockHE_backgroundColor;
+            NUMERIC_REALTIME_CLOCK_HE.borderColor = config.numericRealtimeClockHE_borderColor;
+            NUMERIC_REALTIME_CLOCK_HE.borderThickness = config.numericRealtimeClockHE_borderThickness;
+            NUMERIC_REALTIME_CLOCK_HE.setFormatString(config.numericRealtimeClockHE_format);
             // misc
             Clock_MPP.ALL_SWINGLESS = config.allClocks_preventSwing;
             Clock_MPP.ALL_WORK_IN_NETHER = config.allClocks_workInNether;
