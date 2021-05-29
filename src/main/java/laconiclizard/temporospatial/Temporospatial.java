@@ -24,8 +24,12 @@ public class Temporospatial implements ModInitializer {
             CLOCK_HE.setEnabled(config.clockHE_enabled);
             CLOCK_HE.scale = config.clockHE_scale;
             CLOCK_HE.setPreventSwing(config.clockHE_preventSwing);
+            CLOCK_HE.setWorksInNether(config.clockHE_worksInNether);
+            CLOCK_HE.setWorksInEnd(config.clockHE_worksInEnd);
             // misc
             Clock_MPP.ALL_SWINGLESS = config.allClocks_preventSwing;
+            Clock_MPP.ALL_WORK_IN_NETHER = config.allClocks_workInNether;
+            Clock_MPP.ALL_WORK_IN_END = config.allClocks_workInEnd;
             return ActionResult.PASS;
         });
         CONFIG_HOLDER.load();

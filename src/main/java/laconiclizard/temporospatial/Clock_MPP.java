@@ -6,6 +6,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -20,12 +21,20 @@ public class Clock_MPP implements ModelPredicateProvider {
     private static final Set<ItemStack> SWINGLESS_CLOCKS = Collections.synchronizedSet(
             Collections.newSetFromMap(new IdentityHashMap<>()));
     public static boolean ALL_SWINGLESS = false;  // if true, then all clocks will be swingless
+    private static final Set<ItemStack> NETHER_CLOCKS = Collections.synchronizedSet(
+            Collections.newSetFromMap(new IdentityHashMap<>()));
+    public static boolean ALL_WORK_IN_NETHER;
+    private static final Set<ItemStack> END_CLOCKS = Collections.synchronizedSet(
+            Collections.newSetFromMap(new IdentityHashMap<>()));
+    public static boolean ALL_WORK_IN_END;
 
     public static final ItemStack NORMAL_CLOCK = new ItemStack(Items.CLOCK);
-    public static final ItemStack SWINGLESS_CLOCK = new ItemStack(Items.CLOCK);
+    public static final ItemStack PERFECT_CLOCK = new ItemStack(Items.CLOCK);
 
     static {
-        preventSwing(SWINGLESS_CLOCK);
+        preventSwing(PERFECT_CLOCK);
+        makeWorkInNether(PERFECT_CLOCK);
+        makeWorkInEnd(PERFECT_CLOCK);
     }
 
     public static void preventSwing(ItemStack stack) {
@@ -36,7 +45,35 @@ public class Clock_MPP implements ModelPredicateProvider {
         SWINGLESS_CLOCKS.remove(stack);
     }
 
+    public static void makeWorkInNether(ItemStack stack) {
+        NETHER_CLOCKS.add(stack);
+    }
+
+    public static void freeFromWorkingInNether(ItemStack stack) {
+        NETHER_CLOCKS.remove(stack);
+    }
+
+    public static void makeWorkInEnd(ItemStack stack) {
+        END_CLOCKS.add(stack);
+    }
+
+    public static void freeFromWorkingInEnd(ItemStack stack) {
+        END_CLOCKS.remove(stack);
+    }
+
     // ----- ----- implementation ----- -----
+
+    public static boolean swings(ItemStack stack) {
+        return ALL_SWINGLESS || SWINGLESS_CLOCKS.contains(stack);
+    }
+
+    public static boolean worksInNether(ItemStack stack) {
+        return ALL_WORK_IN_NETHER || NETHER_CLOCKS.contains(stack);
+    }
+
+    public static boolean worksInEnd(ItemStack stack) {
+        return ALL_WORK_IN_END || END_CLOCKS.contains(stack);
+    }
 
     // track swinging and non-swinging values separately
     // (not in separate classes bc. most code is identical)
@@ -57,13 +94,20 @@ public class Clock_MPP implements ModelPredicateProvider {
                 return 0.0F;
             } else {
                 double e;
+
                 if (clientWorld.getDimension().isNatural()) {
                     e = clientWorld.getSkyAngle(1.0F);
                 } else {
-                    e = Math.random();
+                    Identifier did = clientWorld.getRegistryKey().getValue();
+                    if ((did.equals(Util.THE_NETHER_ID) && worksInNether(itemStack))
+                            || (did.equals(Util.THE_END_ID) && worksInEnd(itemStack))) {
+                        e = Util.unfixedSkyAngle(clientWorld.getLunarTime());
+                    } else {
+                        e = Math.random();
+                    }
                 }
 
-                e = this.getTime(clientWorld, e, ALL_SWINGLESS || SWINGLESS_CLOCKS.contains(itemStack));
+                e = this.getTime(clientWorld, e, swings(itemStack));
                 return (float) e;
             }
         }

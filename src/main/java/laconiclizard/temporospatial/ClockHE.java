@@ -4,11 +4,12 @@ import laconiclizard.hudelements.api.HudElement;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 
 public class ClockHE extends HudElement {
 
+    private final ItemStack clockStack = new ItemStack(Items.CLOCK);
     public float scale;
-    private ItemStack clockStack;
 
     {
         setPreventSwing(false);
@@ -16,9 +17,25 @@ public class ClockHE extends HudElement {
 
     public void setPreventSwing(boolean preventSwing) {
         if (preventSwing) {
-            clockStack = Clock_MPP.SWINGLESS_CLOCK;
+            Clock_MPP.preventSwing(clockStack);
         } else {
-            clockStack = Clock_MPP.NORMAL_CLOCK;
+            Clock_MPP.releaseSwing(clockStack);
+        }
+    }
+
+    public void setWorksInNether(boolean worksInNether) {
+        if (worksInNether) {
+            Clock_MPP.makeWorkInNether(clockStack);
+        } else {
+            Clock_MPP.freeFromWorkingInNether(clockStack);
+        }
+    }
+
+    public void setWorksInEnd(boolean worksInEnd) {
+        if (worksInEnd) {
+            Clock_MPP.makeWorkInEnd(clockStack);
+        } else {
+            Clock_MPP.freeFromWorkingInEnd(clockStack);
         }
     }
 

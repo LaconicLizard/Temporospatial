@@ -12,7 +12,11 @@ public class TSConfig implements ConfigData {
     @ConfigEntry.Gui.Excluded
     public int clockHE_X, clockHE_Y;
     public boolean clockHE_preventSwing = true;
+    public boolean clockHE_worksInNether = true;
+    public boolean clockHE_worksInEnd = true;
 
     public boolean allClocks_preventSwing = false;
+    public boolean allClocks_workInNether = false;
+    public boolean allClocks_workInEnd = false;
 
 }
