@@ -1,6 +1,7 @@
 package laconiclizard.temporospatial;
 
 import net.minecraft.client.item.ModelPredicateProvider;
+import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -17,6 +18,9 @@ import java.util.Set;
 
 // adapted from code in ModelPredicateProviderRegistry for CLOCK
 public class Clock_MPP implements ModelPredicateProvider {
+
+    public static final ModelPredicateProvider ORIGINAL_MPP = Util.waitUntilNotNull(
+            () -> ModelPredicateProviderRegistry.get(Items.CLOCK, new Identifier("time")), 1);
 
     private static final Set<ItemStack> SWINGLESS_CLOCKS = Collections.synchronizedSet(
             Collections.newSetFromMap(new IdentityHashMap<>()));
@@ -75,6 +79,10 @@ public class Clock_MPP implements ModelPredicateProvider {
         return ALL_WORK_IN_END || END_CLOCKS.contains(stack);
     }
 
+    public static boolean isNormal(ItemStack stack) {
+        return swings(stack) && !worksInNether(stack) && !worksInEnd(stack);
+    }
+
     // track swinging and non-swinging values separately
     // (not in separate classes bc. most code is identical)
     private double timeSwinging, timeSwingless;
@@ -82,6 +90,9 @@ public class Clock_MPP implements ModelPredicateProvider {
     private long lastTickSwinging, lastTickSwingless;
 
     public float call(ItemStack itemStack, @Nullable ClientWorld clientWorld, @Nullable LivingEntity livingEntity) {
+        if (isNormal(itemStack)) {  // if normal, fall back on default
+            return ORIGINAL_MPP.call(itemStack, clientWorld, livingEntity);
+        }
         Entity entity = livingEntity != null ? livingEntity : itemStack.getHolder();
         if (entity == null) {
             return 0.0F;
