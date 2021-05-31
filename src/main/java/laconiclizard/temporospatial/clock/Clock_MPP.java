@@ -24,73 +24,77 @@ public class Clock_MPP implements ModelPredicateProvider {
     public static final ModelPredicateProvider ORIGINAL_MPP = Util.waitUntilNotNull(
             () -> ModelPredicateProviderRegistry.get(Items.CLOCK, new Identifier("time")), 1);
 
+    // specific and global settings for swingless-ness
     private static final Set<ItemStack> SWINGLESS_CLOCKS = Collections.synchronizedSet(
             Collections.newSetFromMap(new IdentityHashMap<>()));
     public static boolean ALL_SWINGLESS = false;  // if true, then all clocks will be swingless
-    private static final Set<ItemStack> NETHER_CLOCKS = Collections.synchronizedSet(
+
+    // specific and global settings for working in all dimensions
+    private static final Set<ItemStack> WORK_EVERYWHERE_CLOCKS = Collections.synchronizedSet(
             Collections.newSetFromMap(new IdentityHashMap<>()));
-    public static boolean ALL_WORK_IN_NETHER;
-    private static final Set<ItemStack> END_CLOCKS = Collections.synchronizedSet(
-            Collections.newSetFromMap(new IdentityHashMap<>()));
-    public static boolean ALL_WORK_IN_END;
+    public static boolean ALL_WORK_EVERYWHERE;
+
+    // specific (no global) settings for realtime clocks
     private static final Set<ItemStack> REALTIME_CLOCKS = Collections.synchronizedSet(
             Collections.newSetFromMap(new IdentityHashMap<>()));
     // no global "ALL_REALTIME" variable, as that doesn't really make sense
-    public static boolean ALL_WORK_EVERYWHERE;
 
-    public static final ItemStack NORMAL_CLOCK = new ItemStack(Items.CLOCK);
-    public static final ItemStack PERFECT_CLOCK = new ItemStack(Items.CLOCK);
-
-    static {
-        preventSwing(PERFECT_CLOCK);
-        makeWorkInNether(PERFECT_CLOCK);
-        makeWorkInEnd(PERFECT_CLOCK);
-    }
-
-    public static void preventSwing(ItemStack stack) {
+    public static void setPreventSwing(ItemStack stack) {
         SWINGLESS_CLOCKS.add(stack);
     }
 
-    public static void releaseSwing(ItemStack stack) {
+    public static void setPreventSwing(ItemStack stack, boolean preventSwing) {
+        if (preventSwing) {
+            setPreventSwing(stack);
+        } else {
+            unsetPreventSwing(stack);
+        }
+    }
+
+    public static void unsetPreventSwing(ItemStack stack) {
         SWINGLESS_CLOCKS.remove(stack);
     }
 
-    public static void makeWorkInNether(ItemStack stack) {
-        NETHER_CLOCKS.add(stack);
+    public static void setWorksEverywhere(ItemStack stack) {
+        WORK_EVERYWHERE_CLOCKS.add(stack);
     }
 
-    public static void freeFromWorkingInNether(ItemStack stack) {
-        NETHER_CLOCKS.remove(stack);
+    public static void setWorksEverywhere(ItemStack stack, boolean worksEverywhere) {
+        if (worksEverywhere) {
+            setWorksEverywhere(stack);
+        } else {
+            unsetWorksEverywhere(stack);
+        }
     }
 
-    public static void makeWorkInEnd(ItemStack stack) {
-        END_CLOCKS.add(stack);
+    public static void unsetWorksEverywhere(ItemStack stack) {
+        WORK_EVERYWHERE_CLOCKS.remove(stack);
     }
 
-    public static void freeFromWorkingInEnd(ItemStack stack) {
-        END_CLOCKS.remove(stack);
-    }
-
-    public static void makeRealtime(ItemStack stack) {
+    public static void setRealtime(ItemStack stack) {
         REALTIME_CLOCKS.add(stack);
     }
 
-    public static void stopRealtime(ItemStack stack) {
+    public static void setRealtime(ItemStack stack, boolean isRealtime) {
+        if (isRealtime) {
+            setRealtime(stack);
+        } else {
+            unsetRealtime(stack);
+        }
+    }
+
+    public static void unsetRealtime(ItemStack stack) {
         REALTIME_CLOCKS.remove(stack);
     }
 
     // ----- ----- implementation ----- -----
 
-    public static boolean swings(ItemStack stack) {
+    public static boolean isSwingless(ItemStack stack) {
         return ALL_SWINGLESS || SWINGLESS_CLOCKS.contains(stack);
     }
 
-    public static boolean worksInNether(ItemStack stack) {
-        return ALL_WORK_IN_NETHER || NETHER_CLOCKS.contains(stack);
-    }
-
-    public static boolean worksInEnd(ItemStack stack) {
-        return ALL_WORK_IN_END || END_CLOCKS.contains(stack);
+    public static boolean worksEverywhere(ItemStack stack) {
+        return ALL_WORK_EVERYWHERE || WORK_EVERYWHERE_CLOCKS.contains(stack);
     }
 
     public static boolean isRealtime(ItemStack stack) {
@@ -98,7 +102,7 @@ public class Clock_MPP implements ModelPredicateProvider {
     }
 
     public static boolean isNormal(ItemStack stack) {
-        return swings(stack) && !worksInNether(stack) && !worksInEnd(stack) && !isRealtime(stack);
+        return !isSwingless(stack) && !worksEverywhere(stack) && !isRealtime(stack);
     }
 
     // track swinging and non-swinging values separately
@@ -132,9 +136,7 @@ public class Clock_MPP implements ModelPredicateProvider {
                     if (clientWorld.getDimension().isNatural()) {
                         e = clientWorld.getSkyAngle(1.0F);
                     } else {
-                        Identifier did = clientWorld.getRegistryKey().getValue();
-                        if (ALL_WORK_EVERYWHERE || (did.equals(Util.THE_NETHER_ID) && worksInNether(itemStack))
-                                || (did.equals(Util.THE_END_ID) && worksInEnd(itemStack))) {
+                        if (worksEverywhere(itemStack)) {
                             e = Util.unfixedSkyAngle(clientWorld.getLunarTime());
                         } else {
                             e = Math.random();
@@ -142,7 +144,7 @@ public class Clock_MPP implements ModelPredicateProvider {
                     }
                 }
 
-                e = this.getTime(clientWorld, e, swings(itemStack), isRealtime);
+                e = this.getTime(clientWorld, e, isSwingless(itemStack), isRealtime);
                 return (float) e;
             }
         }
