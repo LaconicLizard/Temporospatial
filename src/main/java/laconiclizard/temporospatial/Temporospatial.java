@@ -1,5 +1,6 @@
 package laconiclizard.temporospatial;
 
+import laconiclizard.hudelements.api.HudElement;
 import laconiclizard.temporospatial.clock.*;
 import laconiclizard.temporospatial.mixin.ModelPredicateProviderRegistry_Mixin;
 import me.shedaniel.autoconfig.AutoConfig;
@@ -23,8 +24,39 @@ public class Temporospatial implements ModInitializer {
     public static final ConfigHolder<NumericClock_Config> NUMERIC_CLOCK_CONFIG_HOLDER
             = AutoConfig.register(NumericClock_Config.class, NumericClock_ConfigSerializer::new);
 
+    static {
+        // enable all of our hud elements when in the /alterhud screen
+        HudElement.PRE_ALTERHUD.connect((unused) -> {
+            synchronized (ClockWidgetHE.INSTANCES_LOCK) {
+                for (ClockWidgetHE cw : ClockWidgetHE.INSTANCES) {
+                    cw.enterAlterHud();
+                }
+            }
+            synchronized (NumericClockHE.INSTANCES_LOCK) {
+                for (NumericClockHE nc : NumericClockHE.INSTANCES) {
+                    nc.enterAlterHud();
+                }
+            }
+
+        });
+        HudElement.POST_ALTERHUD.connect((unused) -> {
+            synchronized (ClockWidgetHE.INSTANCES_LOCK) {
+                for (ClockWidgetHE cw : ClockWidgetHE.INSTANCES) {
+                    cw.exitAlterHud();
+                }
+            }
+            synchronized (NumericClockHE.INSTANCES_LOCK) {
+                for (NumericClockHE nc : NumericClockHE.INSTANCES) {
+                    nc.exitAlterHud();
+                }
+            }
+        });
+    }
+
     @Override public void onInitialize() {
         ModelPredicateProviderRegistry_Mixin.invokeRegister(Items.CLOCK, new Identifier("time"), new Clock_MPP());
+
+
         // config stuff
         synchronized (CONFIG_HOLDER_LOCK) {
             CONFIG_HOLDER.registerLoadListener((holder, config) -> {
@@ -32,10 +64,7 @@ public class Temporospatial implements ModInitializer {
                 synchronized (ClockWidgetHE.INSTANCES_LOCK) {  // clear old ones
                     for (ClockWidgetHE cw : ClockWidgetHE.INSTANCES) {
                         synchronized (cw.lock) {
-                            if (cw.isEnabled()) {
-                                cw.disableStrict();
-                                cw.config.enabled = false;
-                            }
+                            cw.config.enabled = false;
                             cw.updateFromConfig();
                         }
                     }
@@ -47,10 +76,7 @@ public class Temporospatial implements ModInitializer {
                 synchronized (NumericClockHE.INSTANCES_LOCK) {
                     for (NumericClockHE nc : NumericClockHE.INSTANCES) {
                         synchronized (nc.lock) {
-                            if (nc.isEnabled()) {
-                                nc.disableStrict();
-                                nc.config.enabled = false;
-                            }
+                            nc.config.enabled = false;
                             nc.updateFromConfig();
                         }
                     }

@@ -3,6 +3,7 @@ package laconiclizard.temporospatial.clock;
 import laconiclizard.hudelements.AlterHudScreen;
 import laconiclizard.hudelements.api.HudElement;
 import laconiclizard.temporospatial.TSConfig;
+import laconiclizard.temporospatial.TSHudElement;
 import laconiclizard.temporospatial.Temporospatial;
 import laconiclizard.temporospatial.Util;
 import me.shedaniel.autoconfig.AutoConfig;
@@ -17,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class NumericClockHE extends HudElement {
+public class NumericClockHE extends TSHudElement {
 
     public static final Object INSTANCES_LOCK = new Object();
     public static final List<NumericClockHE> INSTANCES = new ArrayList<>();

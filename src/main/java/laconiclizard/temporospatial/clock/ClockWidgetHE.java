@@ -3,6 +3,7 @@ package laconiclizard.temporospatial.clock;
 import laconiclizard.hudelements.AlterHudScreen;
 import laconiclizard.hudelements.api.HudElement;
 import laconiclizard.temporospatial.TSConfig;
+import laconiclizard.temporospatial.TSHudElement;
 import laconiclizard.temporospatial.Temporospatial;
 import laconiclizard.temporospatial.Util;
 import me.shedaniel.autoconfig.AutoConfig;
@@ -14,7 +15,7 @@ import net.minecraft.item.Items;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClockWidgetHE extends HudElement {
+public class ClockWidgetHE extends TSHudElement {
 
     public static final Object INSTANCES_LOCK = new Object();
     public static final List<ClockWidgetHE> INSTANCES = new ArrayList<>();
