@@ -8,12 +8,22 @@ import net.minecraft.text.LiteralText;
 
 public class ClockWidget_ConfigSerializer implements ConfigSerializer<ClockWidget_Config> {
 
-    public static final Object BACKER_LOCK = new Object();
-    public static ClockWidgetHE BACKER;  // the ClockWidget_Config to read/write from
+    private static final Object BACKER_LOCK = new Object();
+    private static ClockWidgetHE BACKER;  // the ClockWidget_Config to read/write from
 
     public ClockWidget_ConfigSerializer(@SuppressWarnings("unused") Config definition,
                                         @SuppressWarnings("unused") Class<ClockWidget_Config> configClass) {
         // nothing here
+    }
+
+    public static void setBacker(ClockWidgetHE backer) {
+        synchronized (BACKER_LOCK) {
+            if (BACKER != null && backer != null) {
+                throw new AssertionError("Concurrent modification of multiple ClockWidget_Config s: "
+                        + BACKER + " and " + backer);
+            }
+            BACKER = backer;
+        }
     }
 
     @Override public void serialize(ClockWidget_Config src) {
@@ -53,9 +63,7 @@ public class ClockWidget_ConfigSerializer implements ConfigSerializer<ClockWidge
 
         @Override protected void init() {
             super.init();
-            synchronized (BACKER_LOCK) {
-                BACKER = null;
-            }
+            setBacker(null);
             MinecraftClient.getInstance().openScreen(dest);
         }
 

@@ -16,6 +16,16 @@ public class NumericClock_ConfigSerializer implements ConfigSerializer<NumericCl
         // nothing here
     }
 
+    public static void setBacker(NumericClockHE backer) {
+        synchronized (BACKER_LOCK) {
+            if (BACKER != null && backer != null) {
+                throw new AssertionError("Concurrent serialization of multiple NumericClock_Config s: "
+                        + BACKER + " and " + backer);
+            }
+            BACKER = backer;
+        }
+    }
+
     @Override public void serialize(NumericClock_Config src) {
         synchronized (BACKER_LOCK) {
             if (BACKER != null) {
@@ -53,9 +63,7 @@ public class NumericClock_ConfigSerializer implements ConfigSerializer<NumericCl
 
         @Override protected void init() {
             super.init();
-            synchronized (BACKER_LOCK) {
-                BACKER = null;
-            }
+            setBacker(null);
             MinecraftClient.getInstance().openScreen(dest);
         }
 

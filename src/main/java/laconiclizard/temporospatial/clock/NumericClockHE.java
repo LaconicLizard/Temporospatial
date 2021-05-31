@@ -166,9 +166,7 @@ public class NumericClockHE extends TSHudElement {
     }
 
     @Override public void edit() {
-        synchronized (NumericClock_ConfigSerializer.BACKER_LOCK) {
-            NumericClock_ConfigSerializer.BACKER = this;
-        }
+        NumericClock_ConfigSerializer.setBacker(this);
         synchronized (Temporospatial.NUMERIC_CLOCK_CONFIG_HOLDER_LOCK) {
             Temporospatial.NUMERIC_CLOCK_CONFIG_HOLDER.load();
         }

@@ -103,9 +103,7 @@ public class ClockWidgetHE extends TSHudElement {
     }
 
     @Override public void edit() {
-        synchronized (ClockWidget_ConfigSerializer.BACKER_LOCK) {
-            ClockWidget_ConfigSerializer.BACKER = this;
-        }
+        ClockWidget_ConfigSerializer.setBacker(this);
         synchronized (Temporospatial.CLOCK_WIDGET_CONFIG_HOLDER_LOCK) {
             Temporospatial.CLOCK_WIDGET_CONFIG_HOLDER.load();
         }
