@@ -96,8 +96,8 @@ public class WidgetClockHE extends TSHudElement<WidgetClock_Config> {
         }
         MinecraftClient.getInstance().openScreen(
                 AutoConfig.getConfigScreen(WidgetClock_Config.class,
-                        Temporospatial.WIDGET_CLOCK_CONFIG_SERIALIZER.returnScreen(new AlterHudScreen())
-                ).get());
+                        Temporospatial.WIDGET_CLOCK_CONFIG_SERIALIZER.returnScreen(new AlterHudScreen()))
+                        .get());
     }
 
 }

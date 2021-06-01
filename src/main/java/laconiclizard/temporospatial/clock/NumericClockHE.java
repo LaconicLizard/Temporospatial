@@ -158,8 +158,8 @@ public class NumericClockHE extends TSHudElement<NumericClock_Config> {
         }
         MinecraftClient.getInstance().openScreen(
                 AutoConfig.getConfigScreen(NumericClock_Config.class,
-                        Temporospatial.NUMERIC_CLOCK_CONFIG_SERIALIZER.returnScreen(new AlterHudScreen())
-                ).get());
+                        Temporospatial.NUMERIC_CLOCK_CONFIG_SERIALIZER.returnScreen(new AlterHudScreen()))
+                        .get());
     }
 
 }

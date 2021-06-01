@@ -32,6 +32,11 @@ public class Temporospatial implements ModInitializer {
     public static final SyncHolder<ConfigHolder<NumericClock_Config>> NUMERIC_CLOCK_CONFIG_HOLDER
             = new SyncHolder<>(AutoConfig.register(NumericClock_Config.class, NUMERIC_CLOCK_CONFIG_SERIALIZER::registrationFunction));
 
+    public static final InstanceConfigSerializer<WidgetCompassHE, WidgetCompass_Config> WIDGET_COMPASS_CONFIG_SERIALIZER
+            = new InstanceConfigSerializer<>(new WidgetCompass_Config());
+    public static final SyncHolder<ConfigHolder<WidgetCompass_Config>> WIDGET_COMPASS_CONFIG_HOLDER
+            = new SyncHolder<>(AutoConfig.register(WidgetCompass_Config.class, WIDGET_COMPASS_CONFIG_SERIALIZER::registrationFunction));
+
     static {
         // enable all of our hud elements when in the /alterhud screen
         HudElement.PRE_ALTERHUD.connect((unused) -> {

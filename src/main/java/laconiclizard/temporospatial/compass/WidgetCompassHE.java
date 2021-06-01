@@ -1,10 +1,12 @@
 package laconiclizard.temporospatial.compass;
 
+import laconiclizard.hudelements.AlterHudScreen;
 import laconiclizard.temporospatial.TSConfig;
 import laconiclizard.temporospatial.Temporospatial;
 import laconiclizard.temporospatial.util.InstanceTracker;
 import laconiclizard.temporospatial.util.TSHudElement;
 import laconiclizard.temporospatial.util.Util;
+import me.shedaniel.autoconfig.AutoConfig;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
@@ -83,7 +85,14 @@ public class WidgetCompassHE extends TSHudElement<WidgetCompass_Config> {
     }
 
     @Override public void edit() {
-        // todo
+        Temporospatial.WIDGET_COMPASS_CONFIG_SERIALIZER.setBacker(this);
+        synchronized (Temporospatial.WIDGET_COMPASS_CONFIG_HOLDER.lock) {
+            Temporospatial.WIDGET_COMPASS_CONFIG_HOLDER.value.load();
+        }
+        MinecraftClient.getInstance().openScreen(
+                AutoConfig.getConfigScreen(WidgetCompass_Config.class,
+                        Temporospatial.WIDGET_COMPASS_CONFIG_SERIALIZER.returnScreen(new AlterHudScreen()))
+                        .get());
     }
 
 }
