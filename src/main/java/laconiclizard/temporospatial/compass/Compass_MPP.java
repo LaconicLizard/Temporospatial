@@ -52,8 +52,6 @@ public class Compass_MPP implements ModelPredicateProvider {
     private final ModelPredicateProviderRegistry.AngleInterpolator value = new ModelPredicateProviderRegistry.AngleInterpolator();
     private final ModelPredicateProviderRegistry.AngleInterpolator speed = new ModelPredicateProviderRegistry.AngleInterpolator();
 
-    // todo support point north
-
     public float call(ItemStack itemStack, @Nullable ClientWorld clientWorld, @Nullable LivingEntity livingEntity) {
         if (isNormal(itemStack)) {  // if normal, fall back onto default
             return ORIGINAL_MPP.call(itemStack, clientWorld, livingEntity);

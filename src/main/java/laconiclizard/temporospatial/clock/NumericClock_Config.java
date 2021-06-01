@@ -10,6 +10,7 @@ public class NumericClock_Config extends InstanceConfig<NumericClock_Config> {
     public boolean enabled = false;
     public float x, y, z;
     public float scale = 1f;
+    public boolean worksEverywhere = false;
     public int textColor = 0xffffff, backgroundColor = 0x40000000, borderColor = 0x40ffffff;
     public float borderThickness = 1;
     public boolean realTime = false;

@@ -13,14 +13,29 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class NumericClockHE extends TSHudElement<NumericClock_Config> {
 
     public static final InstanceTracker<NumericClockHE> INSTANCES = new InstanceTracker<>();
+    private static final long RANDOM_DATE_LOW, RANDOM_DATE_HIGH;
+
+    static {
+        SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            RANDOM_DATE_LOW = f.parse("0000-01-01").getTime();
+            RANDOM_DATE_HIGH = f.parse("9999-12-31").getTime();
+        } catch (ParseException e) {
+            throw new AssertionError("Invalid initialization of RANDOM_DATE_*.");
+        }
+    }
+
+    private static final ThreadLocalRandom RANDOM = ThreadLocalRandom.current();
 
     // local copies of config settings
     private float scale;
@@ -30,6 +45,7 @@ public class NumericClockHE extends TSHudElement<NumericClock_Config> {
     private String realTimeFormatString;
     private boolean minecraftTime_isAbsolute;
     private boolean absoluteMinecraftTime_separateDays;
+    private boolean worksEverywhere;
 
     private DateFormat realTimeFormat;
     private long lastTime = -1;
@@ -60,6 +76,7 @@ public class NumericClockHE extends TSHudElement<NumericClock_Config> {
         realTimeFormat = new SimpleDateFormat(realTimeFormatString);
         minecraftTime_isAbsolute = config.minecraftTime_isAbsolute;
         absoluteMinecraftTime_separateDays = config.absoluteMinecraftTime_separateDays;
+        worksEverywhere = config.worksEverywhere;
         // clear cache
         lastTime = -1;
         lastTimeString = null;
@@ -72,25 +89,38 @@ public class NumericClockHE extends TSHudElement<NumericClock_Config> {
      * @return string representation of the current time
      */
     private String getTime() {
-        // todo account for workEverywhere
+        ClientWorld w = MinecraftClient.getInstance().world;
+        if (w == null) return "";
+        long currentTime = w.getTimeOfDay();
+        // return cached answer if we are still in the same tick
+        if (currentTime == lastTime && lastTimeString != null) {
+            return lastTimeString;
+        }
+        lastTime = currentTime;
+        lastTimeString = null;
+
+        final boolean works = w.getDimension().isNatural() || worksEverywhere;
+
         if (realTime) {
-            return realTimeFormat.format(new Date());
-        } else {
-            ClientWorld w = MinecraftClient.getInstance().world;
-            if (w == null) return "";
-            long t = w.getTimeOfDay();
-            if (t == lastTime && lastTimeString != null) {
-                return lastTimeString;
+            Date d;
+            if (works) {
+                d = new Date();
+            } else {
+                d = new Date(RANDOM.nextLong(RANDOM_DATE_LOW, RANDOM_DATE_HIGH));
             }
-            lastTimeString = null;
+            return lastTimeString = realTimeFormat.format(d);
+        } else {
+            if (!works) {
+                currentTime = RANDOM.nextInt(24000 * 100);
+            }
             if (minecraftTime_isAbsolute) {
                 if (absoluteMinecraftTime_separateDays) {
-                    return lastTimeString = ((t / 24000) + "d " + t % 24000 + "t");
+                    return lastTimeString = ((currentTime / 24000) + "d " + currentTime % 24000 + "t");
                 } else {
-                    return lastTimeString = (String.valueOf(t));
+                    return lastTimeString = String.valueOf(currentTime);
                 }
             } else {
-                return lastTimeString = (String.valueOf((t + 24000) % 24000));
+                return lastTimeString = String.valueOf((currentTime + 24000) % 24000);
             }
         }
     }
