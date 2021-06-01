@@ -52,7 +52,6 @@ public class Compass_MPP implements ModelPredicateProvider {
     private final ModelPredicateProviderRegistry.AngleInterpolator value = new ModelPredicateProviderRegistry.AngleInterpolator();
     private final ModelPredicateProviderRegistry.AngleInterpolator speed = new ModelPredicateProviderRegistry.AngleInterpolator();
 
-    // todo support prevent swing
     // todo support point north
 
     public float call(ItemStack itemStack, @Nullable ClientWorld clientWorld, @Nullable LivingEntity livingEntity) {
@@ -72,7 +71,7 @@ public class Compass_MPP implements ModelPredicateProvider {
 
             BlockPos blockPos = CompassItem.hasLodestone(itemStack) ?
                     this.getLodestonePos(clientWorld, itemStack.getOrCreateTag())
-                    : this.getSpawnPos(itemStack, clientWorld);
+                    : this.getSpawnPos(itemStack, clientWorld, entity);
             long l = clientWorld.getTime();
             if (blockPos != null && !(entity.getPos().squaredDistanceTo((double) blockPos.getX() + 0.5D, entity.getPos().getY(), (double) blockPos.getZ() + 0.5D) < 9.999999747378752E-6D)) {
                 boolean bl = livingEntity instanceof PlayerEntity && ((PlayerEntity) livingEntity).isMainPlayer();
@@ -113,22 +112,31 @@ public class Compass_MPP implements ModelPredicateProvider {
     }
 
     @Nullable
-    private BlockPos getSpawnPos(ItemStack stack, ClientWorld world) {
-        if (world.getDimension().isNatural()) {
-            return world.getSpawnPos();
-        } else if (WORK_EVERYWHERE.isFlagged(stack)) {
-            Identifier did = world.getRegistryKey().getValue();
-            if (Objects.equals(did, Util.THE_NETHER_ID)) {
-                // nether coords divided by 8; point corresponding to spawn in the nether
-                BlockPos p = world.getSpawnPos();
-                return new BlockPos(p.getX() / 8, p.getY(), p.getZ() / 8);
-            } else if (Objects.equals(did, Util.THE_END_ID)) {  // end dimension exit portal always at 0,0
-                return new BlockPos(0, 0, 0);
-            } else {  // modded dimension; point to spawn location
-                return world.getSpawnPos();
-            }
-        } else {
+    private BlockPos getSpawnPos(ItemStack stack, ClientWorld world, Entity entity) {
+        // dev note: entity != null
+        final boolean isNatural = world.getDimension().isNatural();
+        final boolean workEverywhere = WORK_EVERYWHERE.isFlagged(stack);
+        if (!isNatural && !workEverywhere) {  // random case
             return null;
+        }
+
+        if (POINT_NORTH.isFlagged(stack)) {
+            return new BlockPos(entity.getPos().add(0, 0, -1000));
+        } else {
+            if (isNatural) {
+                return world.getSpawnPos();
+            } else {  // workEverywhere == true
+                Identifier did = world.getRegistryKey().getValue();
+                if (Objects.equals(did, Util.THE_NETHER_ID)) {
+                    // nether coords divided by 8; point corresponding to spawn in the nether
+                    BlockPos p = world.getSpawnPos();
+                    return new BlockPos(p.getX() / 8, p.getY(), p.getZ() / 8);
+                } else if (Objects.equals(did, Util.THE_END_ID)) {  // end dimension exit portal always at 0,0
+                    return new BlockPos(0, 0, 0);
+                } else {  // modded dimension; point to spawn location
+                    return world.getSpawnPos();
+                }
+            }
         }
     }
 

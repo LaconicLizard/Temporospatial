@@ -72,6 +72,7 @@ public class NumericClockHE extends TSHudElement<NumericClock_Config> {
      * @return string representation of the current time
      */
     private String getTime() {
+        // todo account for workEverywhere
         if (realTime) {
             return realTimeFormat.format(new Date());
         } else {

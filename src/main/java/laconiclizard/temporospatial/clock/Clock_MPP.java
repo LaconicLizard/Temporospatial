@@ -52,23 +52,23 @@ public class Clock_MPP implements ModelPredicateProvider {
                 return 0.0F;
             } else {
                 double e;
+                boolean isNatural = clientWorld.getDimension().isNatural();
                 boolean isRealtime = REALTIME.isFlagged(itemStack);
-                if (isRealtime) {
-                    LocalTime now = LocalTime.now();
-                    int t = now.getHour() * (60 * 60) + now.getMinute() * 60 + now.getSecond();
-                    e = t / (24 * 60 * 60d);
-                } else {
-                    if (clientWorld.getDimension().isNatural()) {
-                        e = clientWorld.getSkyAngle(1.0F);
+                if (isNatural || WORK_EVERYWHERE.isFlagged(itemStack)) {
+                    if (isRealtime) {
+                        LocalTime now = LocalTime.now();
+                        int t = now.getHour() * (60 * 60) + now.getMinute() * 60 + now.getSecond();
+                        e = t / (24 * 60 * 60d);
                     } else {
-                        if (WORK_EVERYWHERE.isFlagged(itemStack)) {
-                            e = Util.unfixedSkyAngle(clientWorld.getLunarTime());
+                        if (isNatural) {
+                            e = clientWorld.getSkyAngle(1.0F);
                         } else {
-                            e = Math.random();
+                            e = Util.unfixedSkyAngle(clientWorld.getLunarTime());
                         }
                     }
+                } else {
+                    e = Math.random();
                 }
-
                 e = this.getTime(clientWorld, e, PREVENT_SWING.isFlagged(itemStack), isRealtime);
                 return (float) e;
             }
