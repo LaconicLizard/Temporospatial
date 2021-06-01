@@ -12,7 +12,9 @@ public class WidgetCompass_Config extends InstanceConfig<WidgetCompass_Config> {
     public float scale = 1f;
     public boolean preventSwing = true;
     public boolean worksEverywhere = true;
-    public boolean pointsNorth = false;
+    public CompassTargetMode targetMode = CompassTargetMode.SPAWN;
+    public String targetDimension = "";
+    public int targetX, targetY, targetZ;
 
     public WidgetCompass_Config() {
     }
@@ -29,7 +31,11 @@ public class WidgetCompass_Config extends InstanceConfig<WidgetCompass_Config> {
         scale = src.scale;
         preventSwing = src.preventSwing;
         worksEverywhere = src.worksEverywhere;
-        pointsNorth = src.pointsNorth;
+        targetMode = src.targetMode;
+        targetDimension = src.targetDimension;
+        targetX = src.targetX;
+        targetY = src.targetY;
+        targetZ = src.targetZ;
     }
 
 }

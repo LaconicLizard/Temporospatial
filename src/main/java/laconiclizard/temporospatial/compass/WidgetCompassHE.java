@@ -11,6 +11,9 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
+import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +37,21 @@ public class WidgetCompassHE extends TSHudElement<WidgetCompass_Config> {
         setZ(config.z);
         Compass_MPP.PREVENT_SWING.setFlagged(compassStack, config.preventSwing);
         Compass_MPP.WORK_EVERYWHERE.setFlagged(compassStack, config.worksEverywhere);
-        Compass_MPP.POINT_NORTH.setFlagged(compassStack, config.pointsNorth);
+        Compass_MPP.POINT_NORTH.setFlagged(compassStack, config.targetMode == CompassTargetMode.NORTH);
+
+        CompoundTag tag = compassStack.getOrCreateTag();
+        if (config.targetMode == CompassTargetMode.CUSTOM_POINT) {  // set lodestone target
+            String targetDimension = config.targetDimension;
+            if (!targetDimension.contains(":")) {  // prefix if reasonable
+                targetDimension = "minecraft:" + targetDimension;
+            }
+            tag.putString("LodestoneDimension", targetDimension);
+            tag.put("LodestonePos",
+                    NbtHelper.fromBlockPos(new BlockPos(config.targetX, config.targetY, config.targetZ)));
+        } else {  // unset lodestone target
+            tag.remove("LodestonePos");
+            tag.remove("LodestoneDimension");
+        }
     }
 
     @Override public void saveAll() {
