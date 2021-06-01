@@ -90,7 +90,7 @@ public class Compass_MPP implements ModelPredicateProvider {
                 e = MathHelper.floorMod(e / 360.0D, 1.0D);
                 double f = this.getAngleToPos(Vec3d.ofCenter(blockPos), entity) / 6.2831854820251465D;
                 double h;
-                if (bl) {
+                if (bl && !PREVENT_SWING.isFlagged(itemStack)) {
                     if (this.value.shouldUpdate(l)) {
                         this.value.update(l, 0.5D - (e - 0.25D));
                     }
