@@ -1,13 +1,13 @@
 package laconiclizard.temporospatial.clock;
 
 import laconiclizard.temporospatial.Temporospatial;
-import me.shedaniel.autoconfig.ConfigData;
+import laconiclizard.temporospatial.util.InstanceConfig;
 import me.shedaniel.autoconfig.annotation.Config;
 
 @Config(name = Temporospatial.MOD_ID + "-internal-NumericClock")
-public class NumericClock_Config implements ConfigData {
+public class NumericClock_Config extends InstanceConfig<NumericClock_Config> {
 
-    public boolean enabled = true;
+    public boolean enabled = false;
     public float x, y, z;
     public float scale = 1f;
     public int textColor = 0xffffff, backgroundColor = 0x40000000, borderColor = 0x40ffffff;
@@ -17,11 +17,8 @@ public class NumericClock_Config implements ConfigData {
     public boolean minecraftTime_isAbsolute = false;
     public boolean absoluteMinecraftTime_separateDays = true;
 
-    public NumericClock_Config() {
-    }
-
-    public NumericClock_Config(NumericClock_Config src) {
-        load(src);
+    @Override public NumericClock_Config newInstance() {
+        return new NumericClock_Config();
     }
 
     public void load(NumericClock_Config src) {

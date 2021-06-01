@@ -1,4 +1,4 @@
-package laconiclizard.temporospatial;
+package laconiclizard.temporospatial.util;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.DrawableHelper;

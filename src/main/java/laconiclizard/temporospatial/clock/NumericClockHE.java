@@ -1,11 +1,11 @@
 package laconiclizard.temporospatial.clock;
 
 import laconiclizard.hudelements.AlterHudScreen;
-import laconiclizard.hudelements.api.HudElement;
 import laconiclizard.temporospatial.TSConfig;
-import laconiclizard.temporospatial.TSHudElement;
+import laconiclizard.temporospatial.util.InstanceTracker;
+import laconiclizard.temporospatial.util.TSHudElement;
 import laconiclizard.temporospatial.Temporospatial;
-import laconiclizard.temporospatial.Util;
+import laconiclizard.temporospatial.util.Util;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -18,12 +18,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class NumericClockHE extends TSHudElement {
+public class NumericClockHE extends TSHudElement<NumericClock_Config> {
 
-    public static final Object INSTANCES_LOCK = new Object();
-    public static final List<NumericClockHE> INSTANCES = new ArrayList<>();
+    public static final InstanceTracker<NumericClockHE> INSTANCES = new InstanceTracker<>();
 
-    public final NumericClock_Config config;
     // local copies of config settings
     private float scale;
     private int textColor, backgroundColor, borderColor;
@@ -38,14 +36,8 @@ public class NumericClockHE extends TSHudElement {
     private String lastTimeString = null;
 
     public NumericClockHE(NumericClock_Config config) {
-        super();
-        synchronized (lock) {
-            this.config = config;
-            updateFromConfig();
-        }
-        synchronized (INSTANCES_LOCK) {
-            INSTANCES.add(this);
-        }
+        super(config);
+        INSTANCES.add(this);
     }
 
     /**
@@ -101,29 +93,24 @@ public class NumericClockHE extends TSHudElement {
         }
     }
 
-    /**
-     * Saves all NumericClockHE s.
-     *
-     * @param noSync a NumericClockHE that has already had its .lock acquired, or null if no such NumericClockHE exists.
-     */
-    public static void saveAll(NumericClockHE noSync) {
+    @Override public void saveAll() {
         List<NumericClock_Config> configs;
-        synchronized (INSTANCES_LOCK) {
-            configs = new ArrayList<>(INSTANCES.size());
-            for (NumericClockHE cw : INSTANCES) {
-                if (cw == noSync) {
-                    configs.add(new NumericClock_Config(cw.config));
+        synchronized (INSTANCES.lock) {
+            configs = new ArrayList<>(INSTANCES.instances.size());
+            for (NumericClockHE cw : INSTANCES.instances) {
+                if (cw == this) {
+                    configs.add(cw.config.copy());
                 } else {
                     synchronized (cw.lock) {
-                        configs.add(new NumericClock_Config(cw.config));  // copy
+                        configs.add(cw.config.copy());
                     }
                 }
             }
         }
-        synchronized (Temporospatial.CONFIG_HOLDER_LOCK) {
-            TSConfig config = Temporospatial.CONFIG_HOLDER.getConfig();
+        synchronized (Temporospatial.CONFIG_HOLDER.lock) {
+            TSConfig config = Temporospatial.CONFIG_HOLDER.value.getConfig();
             config.numericClocks = configs;
-            Temporospatial.CONFIG_HOLDER.save();
+            Temporospatial.CONFIG_HOLDER.value.save();
         }
     }
 
@@ -131,8 +118,7 @@ public class NumericClockHE extends TSHudElement {
         config.enabled = isEnabled();
         config.x = getX();
         config.y = getY();
-        config.z = getZ();
-        saveAll(this);
+        this.saveAll();
     }
 
     @Override public void render(MatrixStack matrices, float tickDelta) {
@@ -144,7 +130,7 @@ public class NumericClockHE extends TSHudElement {
         Util.scaleAbout(x, y, 0, 1 / scale, 1 / scale, 1);
     }
 
-    @Override public int getWidth() {
+    @Override public float getWidth() {
         TextRenderer tr = MinecraftClient.getInstance().textRenderer;
         if (realTime) {
             return tr.getWidth(realTimeFormatString);
@@ -157,7 +143,7 @@ public class NumericClockHE extends TSHudElement {
         }
     }
 
-    @Override public int getHeight() {
+    @Override public float getHeight() {
         return MinecraftClient.getInstance().textRenderer.fontHeight;
     }
 
@@ -166,13 +152,13 @@ public class NumericClockHE extends TSHudElement {
     }
 
     @Override public void edit() {
-        NumericClock_ConfigSerializer.setBacker(this);
-        synchronized (Temporospatial.NUMERIC_CLOCK_CONFIG_HOLDER_LOCK) {
-            Temporospatial.NUMERIC_CLOCK_CONFIG_HOLDER.load();
+        Temporospatial.NUMERIC_CLOCK_CONFIG_SERIALIZER.setBacker(this);
+        synchronized (Temporospatial.NUMERIC_CLOCK_CONFIG_HOLDER.lock) {
+            Temporospatial.NUMERIC_CLOCK_CONFIG_HOLDER.value.load();
         }
         MinecraftClient.getInstance().openScreen(
                 AutoConfig.getConfigScreen(NumericClock_Config.class,
-                        new NumericClock_ConfigSerializer.ReturnScreen(new AlterHudScreen())
+                        Temporospatial.NUMERIC_CLOCK_CONFIG_SERIALIZER.returnScreen(new AlterHudScreen())
                 ).get());
     }
 

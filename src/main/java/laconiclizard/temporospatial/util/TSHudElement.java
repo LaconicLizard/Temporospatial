@@ -1,12 +1,31 @@
-package laconiclizard.temporospatial;
+package laconiclizard.temporospatial.util;
 
 import laconiclizard.hudelements.api.HudElement;
 
-public abstract class TSHudElement extends HudElement {
+public abstract class TSHudElement<C extends InstanceConfig<C>> extends HudElement {
 
     // if true, then this will disable itself upon exiting /alterhud
     private boolean disableOnExitAlterHud = false;
+    public final C config;  // config for this TSHudElement
 
+    public TSHudElement(C config) {
+        this.config = config;
+        updateFromConfig();
+    }
+
+    /**
+     * Updates the behavior of this TSHudElement to reflect the current state of its config.
+     * Assumes .lock has already been acquired.
+     */
+    public abstract void updateFromConfig();
+
+    /**
+     * Save all instances of this type of TSHudElement.
+     * Assumes .lock has already been acquired.
+     */
+    public abstract void saveAll();
+
+    /** Invoked when the /alterhud screen is entered. */
     public void enterAlterHud() {
         synchronized (lock) {
             if (!isEnabled()) {
@@ -16,6 +35,7 @@ public abstract class TSHudElement extends HudElement {
         }
     }
 
+    /** Invoked when the /alterhud screen is exited. */
     public void exitAlterHud() {
         synchronized (lock) {
             if (disableOnExitAlterHud) {
