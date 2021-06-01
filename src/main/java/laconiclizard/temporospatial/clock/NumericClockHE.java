@@ -37,6 +37,7 @@ public class NumericClockHE extends TSHudElement<NumericClock_Config> {
 
     public NumericClockHE(NumericClock_Config config) {
         super(config);
+        updateFromConfig();
         INSTANCES.add(this);
     }
 
@@ -115,7 +116,6 @@ public class NumericClockHE extends TSHudElement<NumericClock_Config> {
     }
 
     @Override public void save() {
-        config.enabled = isEnabled();
         config.x = getX();
         config.y = getY();
         this.saveAll();

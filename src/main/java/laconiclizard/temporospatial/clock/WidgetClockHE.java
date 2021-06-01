@@ -23,6 +23,7 @@ public class WidgetClockHE extends TSHudElement<WidgetClock_Config> {
 
     public WidgetClockHE(WidgetClock_Config config) {
         super(config);
+        updateFromConfig();
         INSTANCES.add(this);
     }
 
@@ -63,7 +64,6 @@ public class WidgetClockHE extends TSHudElement<WidgetClock_Config> {
     }
 
     @Override public void save() {
-        config.enabled = isEnabled();
         config.x = getX();
         config.y = getY();
         saveAll();

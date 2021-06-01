@@ -21,6 +21,7 @@ public class WidgetCompassHE extends TSHudElement<WidgetCompass_Config> {
 
     public WidgetCompassHE(WidgetCompass_Config config) {
         super(config);
+        updateFromConfig();
         INSTANCES.add(this);
     }
 
@@ -56,7 +57,6 @@ public class WidgetCompassHE extends TSHudElement<WidgetCompass_Config> {
     }
 
     @Override public void save() {
-        config.enabled = isEnabled();
         config.x = getX();
         config.y = getY();
         saveAll();
@@ -85,4 +85,5 @@ public class WidgetCompassHE extends TSHudElement<WidgetCompass_Config> {
     @Override public void edit() {
         // todo
     }
+
 }

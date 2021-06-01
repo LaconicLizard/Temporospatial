@@ -10,7 +10,9 @@ public abstract class TSHudElement<C extends InstanceConfig<C>> extends HudEleme
 
     public TSHudElement(C config) {
         this.config = config;
-        updateFromConfig();
+        // cannot updateFromConfig() here because subclass' instance vars may not be initialized
+        // there's a java/fabric/sponge/something bug where private final fields will be set to null if you access them
+        // via a super call before they are initialized
     }
 
     /**

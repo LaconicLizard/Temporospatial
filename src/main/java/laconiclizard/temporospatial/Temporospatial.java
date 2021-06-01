@@ -72,6 +72,7 @@ public class Temporospatial implements ModInitializer {
 
     @Override public void onInitialize() {
         ModelPredicateProviderRegistry_Mixin.invokeRegister(Items.CLOCK, new Identifier("time"), new Clock_MPP());
+        ModelPredicateProviderRegistry_Mixin.invokeRegister(Items.COMPASS, new Identifier("angle"), new Compass_MPP());
         // config stuff
         synchronized (CONFIG_HOLDER.lock) {
             CONFIG_HOLDER.value.registerLoadListener((holder, config) -> {
@@ -101,9 +102,6 @@ public class Temporospatial implements ModInitializer {
                     new NumericClockHE(ncc);
                 }
                 // compasses
-                for (WidgetCompass_Config c : config.widgetCompasses) {
-                    new WidgetCompassHE(c);
-                }
                 synchronized (WidgetCompassHE.INSTANCES.lock) {
                     for (WidgetCompassHE wc : WidgetCompassHE.INSTANCES.instances) {
                         synchronized (wc.lock) {
