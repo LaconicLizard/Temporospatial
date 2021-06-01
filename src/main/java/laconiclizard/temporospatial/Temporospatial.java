@@ -2,6 +2,9 @@ package laconiclizard.temporospatial;
 
 import laconiclizard.hudelements.api.HudElement;
 import laconiclizard.temporospatial.clock.*;
+import laconiclizard.temporospatial.compass.Compass_MPP;
+import laconiclizard.temporospatial.compass.WidgetCompassHE;
+import laconiclizard.temporospatial.compass.WidgetCompass_Config;
 import laconiclizard.temporospatial.mixin.ModelPredicateProviderRegistry_Mixin;
 import laconiclizard.temporospatial.util.InstanceConfigSerializer;
 import laconiclizard.temporospatial.util.SyncHolder;
@@ -42,7 +45,11 @@ public class Temporospatial implements ModInitializer {
                     nc.enterAlterHud();
                 }
             }
-
+            synchronized (WidgetCompassHE.INSTANCES.lock) {
+                for (WidgetCompassHE wc : WidgetCompassHE.INSTANCES.instances) {
+                    wc.enterAlterHud();
+                }
+            }
         });
         HudElement.POST_ALTERHUD.connect((unused) -> {
             synchronized (WidgetClockHE.INSTANCES.lock) {
@@ -55,6 +62,11 @@ public class Temporospatial implements ModInitializer {
                     nc.exitAlterHud();
                 }
             }
+            synchronized (WidgetCompassHE.INSTANCES.lock) {
+                for (WidgetCompassHE wc : WidgetCompassHE.INSTANCES.instances) {
+                    wc.exitAlterHud();
+                }
+            }
         });
     }
 
@@ -63,7 +75,7 @@ public class Temporospatial implements ModInitializer {
         // config stuff
         synchronized (CONFIG_HOLDER.lock) {
             CONFIG_HOLDER.value.registerLoadListener((holder, config) -> {
-                // widget clocks
+                // clocks
                 synchronized (WidgetClockHE.INSTANCES.lock) {  // clear old ones
                     for (WidgetClockHE cw : WidgetClockHE.INSTANCES.instances) {
                         synchronized (cw.lock) {
@@ -88,10 +100,29 @@ public class Temporospatial implements ModInitializer {
                 for (NumericClock_Config ncc : config.numericClocks) {
                     new NumericClockHE(ncc);
                 }
-                // clock globals
+                // compasses
+                for (WidgetCompass_Config c : config.widgetCompasses) {
+                    new WidgetCompassHE(c);
+                }
+                synchronized (WidgetCompassHE.INSTANCES.lock) {
+                    for (WidgetCompassHE wc : WidgetCompassHE.INSTANCES.instances) {
+                        synchronized (wc.lock) {
+                            wc.config.enabled = false;
+                            wc.updateFromConfig();
+                        }
+                    }
+                    WidgetCompassHE.INSTANCES.instances.clear();
+                }
+                for (WidgetCompass_Config c : config.widgetCompasses) {
+                    new WidgetCompassHE(c);
+                }
+                // globals
                 Clock_MPP.PREVENT_SWING.setAllFlagged(config.allClocks_preventSwing);
                 Clock_MPP.WORK_EVERYWHERE.setAllFlagged(config.allClocks_workEverywhere);
                 Clock_MPP.REALTIME.setAllFlagged(config.allClocks_realtime);
+                Compass_MPP.PREVENT_SWING.setAllFlagged(config.allCompasses_preventSwing);
+                Compass_MPP.WORK_EVERYWHERE.setAllFlagged(config.allCompasses_workEverywhere);
+                Compass_MPP.POINT_NORTH.setAllFlagged(config.allCompasses_pointNorth);
                 // return pass
                 return ActionResult.PASS;
             });

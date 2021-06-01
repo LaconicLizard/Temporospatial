@@ -1,12 +1,10 @@
-package laconiclizard.temporospatial.clock;
+package laconiclizard.temporospatial.compass;
 
-import laconiclizard.hudelements.AlterHudScreen;
 import laconiclizard.temporospatial.TSConfig;
+import laconiclizard.temporospatial.Temporospatial;
 import laconiclizard.temporospatial.util.InstanceTracker;
 import laconiclizard.temporospatial.util.TSHudElement;
-import laconiclizard.temporospatial.Temporospatial;
 import laconiclizard.temporospatial.util.Util;
-import me.shedaniel.autoconfig.AutoConfig;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
@@ -15,37 +13,32 @@ import net.minecraft.item.Items;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WidgetClockHE extends TSHudElement<WidgetClock_Config> {
+public class WidgetCompassHE extends TSHudElement<WidgetCompass_Config> {
 
-    public static final InstanceTracker<WidgetClockHE> INSTANCES = new InstanceTracker<>();
+    public static final InstanceTracker<WidgetCompassHE> INSTANCES = new InstanceTracker<>();
 
-    private final ItemStack clockStack = new ItemStack(Items.CLOCK);
+    private final ItemStack compassStack = new ItemStack(Items.COMPASS);
 
-    public WidgetClockHE(WidgetClock_Config config) {
+    public WidgetCompassHE(WidgetCompass_Config config) {
         super(config);
         INSTANCES.add(this);
     }
 
-    /**
-     * Updates the behavior of this WidgetClockHE to reflect the current state of its config.
-     * Assumes .lock has already been acquired.
-     */
     @Override public void updateFromConfig() {
         setEnabled(config.enabled);
         setX(config.x);
         setY(config.y);
         setZ(config.z);
-        // don't need to set scale
-        Clock_MPP.PREVENT_SWING.setFlagged(clockStack, config.preventSwing);
-        Clock_MPP.WORK_EVERYWHERE.setFlagged(clockStack, config.worksEverywhere);
-        Clock_MPP.REALTIME.setFlagged(clockStack, config.realTime);
+        Compass_MPP.PREVENT_SWING.setFlagged(compassStack, config.preventSwing);
+        Compass_MPP.WORK_EVERYWHERE.setFlagged(compassStack, config.worksEverywhere);
+        Compass_MPP.POINT_NORTH.setFlagged(compassStack, config.pointsNorth);
     }
 
     @Override public void saveAll() {
-        List<WidgetClock_Config> configs;
+        List<WidgetCompass_Config> configs;
         synchronized (INSTANCES.lock) {
             configs = new ArrayList<>(INSTANCES.instances.size());
-            for (WidgetClockHE cw : INSTANCES.instances) {
+            for (WidgetCompassHE cw : INSTANCES.instances) {
                 if (cw == this) {
                     configs.add(cw.config.copy());
                 } else {
@@ -57,7 +50,7 @@ public class WidgetClockHE extends TSHudElement<WidgetClock_Config> {
         }
         synchronized (Temporospatial.CONFIG_HOLDER.lock) {
             TSConfig config = Temporospatial.CONFIG_HOLDER.value.getConfig();
-            config.widgetClocks = configs;
+            config.widgetCompasses = configs;
             Temporospatial.CONFIG_HOLDER.value.save();
         }
     }
@@ -73,7 +66,7 @@ public class WidgetClockHE extends TSHudElement<WidgetClock_Config> {
         float x = getX(), y = getY();
         float scale = config.scale;
         Util.scaleAbout(x, y, 0, scale, scale, 1);
-        MinecraftClient.getInstance().getItemRenderer().renderInGuiWithOverrides(clockStack, (int) x, (int) y);
+        MinecraftClient.getInstance().getItemRenderer().renderInGuiWithOverrides(compassStack, (int) x, (int) y);
         Util.scaleAbout(x, y, 0, 1 / scale, 1 / scale, 1);
     }
 
@@ -90,14 +83,6 @@ public class WidgetClockHE extends TSHudElement<WidgetClock_Config> {
     }
 
     @Override public void edit() {
-        Temporospatial.WIDGET_CLOCK_CONFIG_SERIALIZER.setBacker(this);
-        synchronized (Temporospatial.WIDGET_CLOCK_CONFIG_HOLDER.lock) {
-            Temporospatial.WIDGET_CLOCK_CONFIG_HOLDER.value.load();
-        }
-        MinecraftClient.getInstance().openScreen(
-                AutoConfig.getConfigScreen(WidgetClock_Config.class,
-                        Temporospatial.WIDGET_CLOCK_CONFIG_SERIALIZER.returnScreen(new AlterHudScreen())
-                ).get());
+        // todo
     }
-
 }
