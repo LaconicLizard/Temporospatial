@@ -7,6 +7,7 @@ import laconiclizard.temporospatial.compass.CoordHE_Config;
 import laconiclizard.temporospatial.compass.WidgetCompassHE_Config;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
+import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,10 +15,15 @@ import java.util.List;
 @Config(name = Temporospatial.MOD_ID)
 public class TSConfig implements ConfigData {
 
+    @ConfigEntry.Gui.Excluded
     public List<WidgetClockHE_Config> widgetClocks = new ArrayList<>();
+    @ConfigEntry.Gui.Excluded
     public List<NumericClockHE_Config> numericClocks = new ArrayList<>();
+    @ConfigEntry.Gui.Excluded
     public List<WidgetCompassHE_Config> widgetCompasses = new ArrayList<>();
+    @ConfigEntry.Gui.Excluded
     public List<CoordHE_Config> coordDisplays = new ArrayList<>();
+    @ConfigEntry.Gui.Excluded
     public List<AnglesHE_Config> anglesDisplays = new ArrayList<>();
 
     // globals

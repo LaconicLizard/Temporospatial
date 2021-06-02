@@ -17,6 +17,9 @@
     ],
     "main": [
       "laconiclizard.temporospatial.Temporospatial"
+    ],
+    "modmenu": [
+      "laconiclizard.temporospatial.ModMenuEntrypoint"
     ]
   },
   "mixins": [

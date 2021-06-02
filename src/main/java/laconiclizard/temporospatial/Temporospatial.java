@@ -80,46 +80,53 @@ public class Temporospatial implements ModInitializer {
         });
     }
 
+    private static void loadStateFromConfig(TSConfig config) {
+        // deactivate and delete old stuff
+        for (InstanceTracker<? extends TSHudElement<?>> tracker : INSTANCE_TRACKERS) {
+            synchronized (tracker.lock) {
+                for (TSHudElement<?> he : tracker.instances) {
+                    he.config.heConfigData().enabled = false;
+                    he.updateFromConfig();
+                }
+            }
+            tracker.instances.clear();
+        }
+        // load new hud elements
+        for (WidgetClockHE_Config c : config.widgetClocks) {
+            new WidgetClockHE(c);
+        }
+        for (NumericClockHE_Config c : config.numericClocks) {
+            new NumericClockHE(c);
+        }
+        for (WidgetCompassHE_Config c : config.widgetCompasses) {
+            new WidgetCompassHE(c);
+        }
+        for (CoordHE_Config c : config.coordDisplays) {
+            new CoordHE(c);
+        }
+        for (AnglesHE_Config c : config.anglesDisplays) {
+            new AnglesHE(c);
+        }
+        // globals
+        Clock_MPP.PREVENT_SWING.setAllFlagged(config.allClocks_preventSwing);
+        Clock_MPP.WORK_EVERYWHERE.setAllFlagged(config.allClocks_workEverywhere);
+        Clock_MPP.REALTIME.setAllFlagged(config.allClocks_realtime);
+        Compass_MPP.PREVENT_SWING.setAllFlagged(config.allCompasses_preventSwing);
+        Compass_MPP.WORK_EVERYWHERE.setAllFlagged(config.allCompasses_workEverywhere);
+        Compass_MPP.POINT_NORTH.setAllFlagged(config.allCompasses_pointNorth);
+    }
+
     @Override public void onInitialize() {
         ModelPredicateProviderRegistry_Mixin.invokeRegister(Items.CLOCK, new Identifier("time"), new Clock_MPP());
         ModelPredicateProviderRegistry_Mixin.invokeRegister(Items.COMPASS, new Identifier("angle"), new Compass_MPP());
         // config stuff
         synchronized (CONFIG_HOLDER.lock) {
             CONFIG_HOLDER.value.registerLoadListener((holder, config) -> {
-                // deactivate and delete old stuff
-                for (InstanceTracker<? extends TSHudElement<?>> tracker : INSTANCE_TRACKERS) {
-                    synchronized (tracker.lock) {
-                        for (TSHudElement<?> he : tracker.instances) {
-                            he.config.heConfigData().enabled = false;
-                            he.updateFromConfig();
-                        }
-                    }
-                    tracker.instances.clear();
-                }
-                // load new hud elements
-                for (WidgetClockHE_Config c : config.widgetClocks) {
-                    new WidgetClockHE(c);
-                }
-                for (NumericClockHE_Config c : config.numericClocks) {
-                    new NumericClockHE(c);
-                }
-                for (WidgetCompassHE_Config c : config.widgetCompasses) {
-                    new WidgetCompassHE(c);
-                }
-                for (CoordHE_Config c : config.coordDisplays) {
-                    new CoordHE(c);
-                }
-                for (AnglesHE_Config c : config.anglesDisplays) {
-                    new AnglesHE(c);
-                }
-                // globals
-                Clock_MPP.PREVENT_SWING.setAllFlagged(config.allClocks_preventSwing);
-                Clock_MPP.WORK_EVERYWHERE.setAllFlagged(config.allClocks_workEverywhere);
-                Clock_MPP.REALTIME.setAllFlagged(config.allClocks_realtime);
-                Compass_MPP.PREVENT_SWING.setAllFlagged(config.allCompasses_preventSwing);
-                Compass_MPP.WORK_EVERYWHERE.setAllFlagged(config.allCompasses_workEverywhere);
-                Compass_MPP.POINT_NORTH.setAllFlagged(config.allCompasses_pointNorth);
-                // return pass
+                loadStateFromConfig(config);
+                return ActionResult.PASS;
+            });
+            CONFIG_HOLDER.value.registerSaveListener((holder, config) -> {
+                loadStateFromConfig(config);
                 return ActionResult.PASS;
             });
             CONFIG_HOLDER.value.load();
