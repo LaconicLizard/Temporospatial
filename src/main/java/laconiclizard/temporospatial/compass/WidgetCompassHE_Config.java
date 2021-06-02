@@ -1,15 +1,12 @@
 package laconiclizard.temporospatial.compass;
 
 import laconiclizard.temporospatial.Temporospatial;
-import laconiclizard.temporospatial.util.InstanceConfig;
+import laconiclizard.temporospatial.util.InstanceConfig_HE;
 import me.shedaniel.autoconfig.annotation.Config;
 
 @Config(name = Temporospatial.MOD_ID + "-internal-WidgetCompass")
-public class WidgetCompassHE_Config extends InstanceConfig<WidgetCompassHE_Config> {
+public class WidgetCompassHE_Config extends InstanceConfig_HE<WidgetCompassHE_Config> {
 
-    public boolean enabled;
-    public float x, y, z;
-    public float scale = 1f;
     public boolean preventSwing = true;
     public boolean worksEverywhere = true;
     public CompassTargetMode targetMode = CompassTargetMode.SPAWN;
@@ -24,11 +21,7 @@ public class WidgetCompassHE_Config extends InstanceConfig<WidgetCompassHE_Confi
     }
 
     public void load(WidgetCompassHE_Config src) {
-        enabled = src.enabled;
-        x = src.x;
-        y = src.y;
-        z = src.z;
-        scale = src.scale;
+        super.load(src);
         preventSwing = src.preventSwing;
         worksEverywhere = src.worksEverywhere;
         targetMode = src.targetMode;
