@@ -36,8 +36,8 @@ public abstract class TSHudElement<C extends InstanceConfig_HE<C>> extends HudEl
     public abstract void saveAll();
 
     @Override public void save() {
-        setX(config.x);
-        setY(config.y);
+        config.x = getX();
+        config.y = getY();
         saveAll();
     }
 

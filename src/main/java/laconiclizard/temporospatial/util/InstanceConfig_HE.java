@@ -5,7 +5,7 @@ public abstract class InstanceConfig_HE<T extends InstanceConfig_HE<T>> extends 
 
     public boolean enabled;
     public float x, y, z;
-    public float scale;
+    public float scale = 1f;
 
     @Override public void load(T src) {
         enabled = src.enabled;

@@ -5,7 +5,9 @@ import laconiclizard.temporospatial.clock.*;
 import laconiclizard.temporospatial.compass.*;
 import laconiclizard.temporospatial.mixin.ModelPredicateProviderRegistry_Mixin;
 import laconiclizard.temporospatial.util.InstanceConfigSerializer;
+import laconiclizard.temporospatial.util.InstanceTracker;
 import laconiclizard.temporospatial.util.SyncHolder;
+import laconiclizard.temporospatial.util.TSHudElement;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.ConfigHolder;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
@@ -14,11 +16,18 @@ import net.minecraft.item.Items;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class Temporospatial implements ModInitializer {
 
     public static final String MOD_ID = "temporospatial";
+
+    // global config
     public static final SyncHolder<ConfigHolder<TSConfig>> CONFIG_HOLDER
             = new SyncHolder<>(AutoConfig.register(TSConfig.class, GsonConfigSerializer::new));
+
+    // hud element config stuff
 
     public static final InstanceConfigSerializer<WidgetClockHE, WidgetClockHE_Config> WIDGET_CLOCK_CONFIG_SERIALIZER
             = new InstanceConfigSerializer<>(new WidgetClockHE_Config());
@@ -40,49 +49,32 @@ public class Temporospatial implements ModInitializer {
     public static final SyncHolder<ConfigHolder<CoordHE_Config>> COORD_HE_CONFIG_HOLDER
             = new SyncHolder<>(AutoConfig.register(CoordHE_Config.class, COORD_HE_CONFIG_SERIALIZER::registrationFunction));
 
+    public static final InstanceConfigSerializer<AnglesHE, AnglesHE_Config> ANGLES_HE_CONFIG_SERIALIZER
+            = new InstanceConfigSerializer<>(new AnglesHE_Config());
+    public static final SyncHolder<ConfigHolder<AnglesHE_Config>> ANGLES_HE_CONFIG_HOLDER
+            = new SyncHolder<>(AutoConfig.register(AnglesHE_Config.class, ANGLES_HE_CONFIG_SERIALIZER::registrationFunction));
+
+    public static final List<InstanceTracker<? extends TSHudElement<?>>> INSTANCE_TRACKERS
+            = Arrays.asList(WidgetClockHE.INSTANCES, NumericClockHE.INSTANCES, WidgetCompassHE.INSTANCES,
+            CoordHE.INSTANCES, AnglesHE.INSTANCES);
+
     static {
         // enable all of our hud elements when in the /alterhud screen
         HudElement.PRE_ALTERHUD.connect((unused) -> {
-            synchronized (WidgetClockHE.INSTANCES.lock) {
-                for (WidgetClockHE cw : WidgetClockHE.INSTANCES.instances) {
-                    cw.enterAlterHud();
-                }
-            }
-            synchronized (NumericClockHE.INSTANCES.lock) {
-                for (NumericClockHE nc : NumericClockHE.INSTANCES.instances) {
-                    nc.enterAlterHud();
-                }
-            }
-            synchronized (WidgetCompassHE.INSTANCES.lock) {
-                for (WidgetCompassHE wc : WidgetCompassHE.INSTANCES.instances) {
-                    wc.enterAlterHud();
-                }
-            }
-            synchronized (CoordHE.INSTANCES.lock) {
-                for (CoordHE he : CoordHE.INSTANCES.instances) {
-                    he.enterAlterHud();
+            for (InstanceTracker<? extends TSHudElement<?>> tracker : INSTANCE_TRACKERS) {
+                synchronized (tracker.lock) {
+                    for (TSHudElement<?> he : tracker.instances) {
+                        he.enterAlterHud();
+                    }
                 }
             }
         });
         HudElement.POST_ALTERHUD.connect((unused) -> {
-            synchronized (WidgetClockHE.INSTANCES.lock) {
-                for (WidgetClockHE cw : WidgetClockHE.INSTANCES.instances) {
-                    cw.exitAlterHud();
-                }
-            }
-            synchronized (NumericClockHE.INSTANCES.lock) {
-                for (NumericClockHE nc : NumericClockHE.INSTANCES.instances) {
-                    nc.exitAlterHud();
-                }
-            }
-            synchronized (WidgetCompassHE.INSTANCES.lock) {
-                for (WidgetCompassHE wc : WidgetCompassHE.INSTANCES.instances) {
-                    wc.exitAlterHud();
-                }
-            }
-            synchronized (CoordHE.INSTANCES.lock) {
-                for (CoordHE he : CoordHE.INSTANCES.instances) {
-                    he.exitAlterHud();
+            for (InstanceTracker<? extends TSHudElement<?>> tracker : INSTANCE_TRACKERS) {
+                synchronized (tracker.lock) {
+                    for (TSHudElement<?> he : tracker.instances) {
+                        he.exitAlterHud();
+                    }
                 }
             }
         });
@@ -94,55 +86,31 @@ public class Temporospatial implements ModInitializer {
         // config stuff
         synchronized (CONFIG_HOLDER.lock) {
             CONFIG_HOLDER.value.registerLoadListener((holder, config) -> {
-                // clocks
-                synchronized (WidgetClockHE.INSTANCES.lock) {  // clear old ones
-                    for (WidgetClockHE cw : WidgetClockHE.INSTANCES.instances) {
-                        synchronized (cw.lock) {
-                            cw.config.enabled = false;
-                            cw.updateFromConfig();
-                        }
-                    }
-                    WidgetClockHE.INSTANCES.instances.clear();
-                }
-                for (WidgetClockHE_Config cwc : config.widgetClocks) {  // load new ones
-                    new WidgetClockHE(cwc);
-                }
-                synchronized (NumericClockHE.INSTANCES.lock) {
-                    for (NumericClockHE nc : NumericClockHE.INSTANCES.instances) {
-                        synchronized (nc.lock) {
-                            nc.config.enabled = false;
-                            nc.updateFromConfig();
-                        }
-                    }
-                    NumericClockHE.INSTANCES.instances.clear();
-                }
-                for (NumericClockHE_Config ncc : config.numericClocks) {
-                    new NumericClockHE(ncc);
-                }
-                // compasses
-                synchronized (WidgetCompassHE.INSTANCES.lock) {
-                    for (WidgetCompassHE wc : WidgetCompassHE.INSTANCES.instances) {
-                        synchronized (wc.lock) {
-                            wc.config.enabled = false;
-                            wc.updateFromConfig();
-                        }
-                    }
-                    WidgetCompassHE.INSTANCES.instances.clear();
-                }
-                for (WidgetCompassHE_Config c : config.widgetCompasses) {
-                    new WidgetCompassHE(c);
-                }
-                synchronized (CoordHE.INSTANCES.lock) {
-                    for (CoordHE he : CoordHE.INSTANCES.instances) {
-                        synchronized (he.lock) {
+                // deactivate and delete old stuff
+                for (InstanceTracker<? extends TSHudElement<?>> tracker : INSTANCE_TRACKERS) {
+                    synchronized (tracker.lock) {
+                        for (TSHudElement<?> he : tracker.instances) {
                             he.config.enabled = false;
                             he.updateFromConfig();
                         }
                     }
-                    CoordHE.INSTANCES.instances.clear();
+                    tracker.instances.clear();
+                }
+                // load new hud elements
+                for (WidgetClockHE_Config cwc : config.widgetClocks) {
+                    new WidgetClockHE(cwc);
+                }
+                for (NumericClockHE_Config ncc : config.numericClocks) {
+                    new NumericClockHE(ncc);
+                }
+                for (WidgetCompassHE_Config c : config.widgetCompasses) {
+                    new WidgetCompassHE(c);
                 }
                 for (CoordHE_Config c : config.coordDisplays) {
                     new CoordHE(c);
+                }
+                for (AnglesHE_Config c : config.anglesDisplays) {
+                    new AnglesHE(c);
                 }
                 // globals
                 Clock_MPP.PREVENT_SWING.setAllFlagged(config.allClocks_preventSwing);
@@ -155,7 +123,7 @@ public class Temporospatial implements ModInitializer {
                 return ActionResult.PASS;
             });
             CONFIG_HOLDER.value.load();
-//            CoordHE he = new CoordHE(new CoordHE_Config());
+//            AnglesHE he = new AnglesHE(new AnglesHE_Config());
 //            he.config.enabled = true;
 //            he.updateFromConfig();
 //            he.save();
