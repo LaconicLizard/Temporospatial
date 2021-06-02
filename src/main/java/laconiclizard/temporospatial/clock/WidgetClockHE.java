@@ -32,11 +32,7 @@ public class WidgetClockHE extends TSHudElement<WidgetClockHE_Config> {
      * Assumes .lock has already been acquired.
      */
     @Override public void updateFromConfig() {
-        setEnabled(config.enabled);
-        setX(config.x);
-        setY(config.y);
-        setZ(config.z);
-        // don't need to set scale
+        super.updateFromConfig();
         Clock_MPP.PREVENT_SWING.setFlagged(clockStack, config.preventSwing);
         Clock_MPP.WORK_EVERYWHERE.setFlagged(clockStack, config.worksEverywhere);
         Clock_MPP.REALTIME.setFlagged(clockStack, config.realTime);
@@ -63,26 +59,20 @@ public class WidgetClockHE extends TSHudElement<WidgetClockHE_Config> {
         }
     }
 
-    @Override public void save() {
-        config.x = getX();
-        config.y = getY();
-        saveAll();
-    }
-
     @Override public void render(MatrixStack matrices, float tickDelta) {
         float x = getX(), y = getY();
-        float scale = config.scale;
+        float scale = cachedConfig_scale;
         Util.scaleAbout(x, y, 0, scale, scale, 1);
         MinecraftClient.getInstance().getItemRenderer().renderInGuiWithOverrides(clockStack, (int) x, (int) y);
         Util.scaleAbout(x, y, 0, 1 / scale, 1 / scale, 1);
     }
 
     @Override public float getWidth() {
-        return 16 * config.scale;
+        return 16 * cachedConfig_scale;
     }
 
     @Override public float getHeight() {
-        return 16 * config.scale;
+        return 16 * cachedConfig_scale;
     }
 
     @Override public boolean isEditable() {

@@ -6,7 +6,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.LiteralText;
 
-public class InstanceConfigSerializer<T extends TSHudElement<C>, C extends InstanceConfig<C>> implements ConfigSerializer<C> {
+public class InstanceConfigSerializer<T extends TSHudElement<C>, C extends InstanceConfig_HE<C>> implements ConfigSerializer<C> {
 
     private final Object lock = new Object();
     private T backer = null;

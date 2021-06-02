@@ -31,10 +31,7 @@ public class WidgetCompassHE extends TSHudElement<WidgetCompassHE_Config> {
     }
 
     @Override public void updateFromConfig() {
-        setEnabled(config.enabled);
-        setX(config.x);
-        setY(config.y);
-        setZ(config.z);
+        super.updateFromConfig();
         Compass_MPP.PREVENT_SWING.setFlagged(compassStack, config.preventSwing);
         Compass_MPP.WORK_EVERYWHERE.setFlagged(compassStack, config.worksEverywhere);
         Compass_MPP.POINT_NORTH.setFlagged(compassStack, config.targetMode == CompassTargetMode.NORTH);
@@ -75,26 +72,20 @@ public class WidgetCompassHE extends TSHudElement<WidgetCompassHE_Config> {
         }
     }
 
-    @Override public void save() {
-        config.x = getX();
-        config.y = getY();
-        saveAll();
-    }
-
     @Override public void render(MatrixStack matrices, float tickDelta) {
         float x = getX(), y = getY();
-        float scale = config.scale;
+        float scale = cachedConfig_scale;
         Util.scaleAbout(x, y, 0, scale, scale, 1);
         MinecraftClient.getInstance().getItemRenderer().renderInGuiWithOverrides(compassStack, (int) x, (int) y);
         Util.scaleAbout(x, y, 0, 1 / scale, 1 / scale, 1);
     }
 
     @Override public float getWidth() {
-        return 16 * config.scale;
+        return 16 * cachedConfig_scale;
     }
 
     @Override public float getHeight() {
-        return 16 * config.scale;
+        return 16 * cachedConfig_scale;
     }
 
     @Override public boolean isEditable() {

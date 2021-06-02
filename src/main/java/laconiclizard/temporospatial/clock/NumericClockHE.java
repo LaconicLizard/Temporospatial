@@ -2,14 +2,12 @@ package laconiclizard.temporospatial.clock;
 
 import laconiclizard.hudelements.AlterHudScreen;
 import laconiclizard.temporospatial.TSConfig;
-import laconiclizard.temporospatial.util.InstanceTracker;
-import laconiclizard.temporospatial.util.TSHudElement;
 import laconiclizard.temporospatial.Temporospatial;
-import laconiclizard.temporospatial.util.Util;
+import laconiclizard.temporospatial.util.InstanceTracker;
+import laconiclizard.temporospatial.util.TSTextHudElement;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 
 import java.text.DateFormat;
@@ -20,7 +18,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class NumericClockHE extends TSHudElement<NumericClockHE_Config> {
+public class NumericClockHE extends TSTextHudElement<NumericClockHE_Config> {
 
     public static final InstanceTracker<NumericClockHE> INSTANCES = new InstanceTracker<>();
     private static final long RANDOM_DATE_LOW, RANDOM_DATE_HIGH;
@@ -38,9 +36,6 @@ public class NumericClockHE extends TSHudElement<NumericClockHE_Config> {
     private static final ThreadLocalRandom RANDOM = ThreadLocalRandom.current();
 
     // local copies of config settings
-    private float scale;
-    private int textColor, backgroundColor, borderColor;
-    private float borderThickness;
     private boolean realTime;
     private String realTimeFormatString;
     private boolean minecraftTime_isAbsolute;
@@ -48,8 +43,6 @@ public class NumericClockHE extends TSHudElement<NumericClockHE_Config> {
     private boolean worksEverywhere;
 
     private DateFormat realTimeFormat;
-    private long lastTime = -1;
-    private String lastTimeString = null;
 
     public NumericClockHE(NumericClockHE_Config config) {
         super(config);
@@ -62,43 +55,19 @@ public class NumericClockHE extends TSHudElement<NumericClockHE_Config> {
      * Assumes .lock has already been acquired.
      */
     public void updateFromConfig() {
-        setEnabled(config.enabled);
-        setX(config.x);
-        setY(config.y);
-        setZ(config.z);
-        scale = config.scale;
-        textColor = config.textColor;
-        backgroundColor = config.backgroundColor;
-        borderColor = config.borderColor;
-        borderThickness = config.borderThickness;
+        super.updateFromConfig();
         realTime = config.realTime;
         realTimeFormatString = config.realTimeFormat;
         realTimeFormat = new SimpleDateFormat(realTimeFormatString);
         minecraftTime_isAbsolute = config.minecraftTime_isAbsolute;
         absoluteMinecraftTime_separateDays = config.absoluteMinecraftTime_separateDays;
         worksEverywhere = config.worksEverywhere;
-        // clear cache
-        lastTime = -1;
-        lastTimeString = null;
     }
 
-    /**
-     * Get representation of the current time as a string.
-     * Assumes that .lock as already been acquired.
-     *
-     * @return string representation of the current time
-     */
-    private String getTime() {
+    @Override public String generateText() {
         ClientWorld w = MinecraftClient.getInstance().world;
         if (w == null) return "";
         long currentTime = w.getTimeOfDay();
-        // return cached answer if we are still in the same tick
-        if (currentTime == lastTime && lastTimeString != null) {
-            return lastTimeString;
-        }
-        lastTime = currentTime;
-        lastTimeString = null;
-
         final boolean works = w.getDimension().isNatural() || worksEverywhere;
 
         if (realTime) {
@@ -108,19 +77,19 @@ public class NumericClockHE extends TSHudElement<NumericClockHE_Config> {
             } else {
                 d = new Date(RANDOM.nextLong(RANDOM_DATE_LOW, RANDOM_DATE_HIGH));
             }
-            return lastTimeString = realTimeFormat.format(d);
+            return realTimeFormat.format(d);
         } else {
             if (!works) {
                 currentTime = RANDOM.nextInt(24000 * 100);
             }
             if (minecraftTime_isAbsolute) {
                 if (absoluteMinecraftTime_separateDays) {
-                    return lastTimeString = ((currentTime / 24000) + "d " + currentTime % 24000 + "t");
+                    return currentTime / 24000 + "d " + currentTime % 24000 + "t";
                 } else {
-                    return lastTimeString = String.valueOf(currentTime);
+                    return String.valueOf(currentTime);
                 }
             } else {
-                return lastTimeString = String.valueOf((currentTime + 24000) % 24000);
+                return String.valueOf((currentTime + 24000) % 24000);
             }
         }
     }
@@ -146,31 +115,18 @@ public class NumericClockHE extends TSHudElement<NumericClockHE_Config> {
         }
     }
 
-    @Override public void save() {
-        config.x = getX();
-        config.y = getY();
-        this.saveAll();
-    }
-
-    @Override public void render(MatrixStack matrices, float tickDelta) {
-        Util.drawTextWithFrills(matrices, scale, getTime(), getX(), getY(), textColor, backgroundColor, borderThickness, borderColor);
-    }
-
     @Override public float getWidth() {
+        // dev note: override so times like "128" keep left-padded space without zeros
         TextRenderer tr = MinecraftClient.getInstance().textRenderer;
         if (realTime) {
             return tr.getWidth(realTimeFormatString);
         } else {
             if (minecraftTime_isAbsolute) {
-                return tr.getWidth(getTime());
+                return tr.getWidth(getText());
             } else {
                 return tr.getWidth("23999");
             }
         }
-    }
-
-    @Override public float getHeight() {
-        return MinecraftClient.getInstance().textRenderer.fontHeight;
     }
 
     @Override public boolean isEditable() {
