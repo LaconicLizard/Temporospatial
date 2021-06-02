@@ -8,6 +8,7 @@ import me.shedaniel.autoconfig.annotation.Config;
 public class CoordHE_Config extends InstanceConfig_TextHE<CoordHE_Config> {
 
     public String separator = "/";
+    public String prefix = "", suffix = "";
     public String numberFormat = "#.000";
 
     @Override public CoordHE_Config newInstance() {

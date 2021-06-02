@@ -17,7 +17,7 @@ public class CoordHE extends TSTextHudElement<CoordHE_Config> {
 
     public static final InstanceTracker<CoordHE> INSTANCES = new InstanceTracker<>();
 
-    private String separator;
+    private String separator, prefix, suffix;
     private DecimalFormat format;
 
     public CoordHE(CoordHE_Config config) {
@@ -29,12 +29,18 @@ public class CoordHE extends TSTextHudElement<CoordHE_Config> {
     @Override public String generateText() {
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
         if (player == null) return "";
-        return format.format(player.getX()) + separator + format.format(player.getY()) + separator + format.format(player.getZ());
+        return prefix
+                + format.format(player.getX())
+                + separator + format.format(player.getY())
+                + separator + format.format(player.getZ())
+                + suffix;
     }
 
     @Override public void updateFromConfig() {
         super.updateFromConfig();
         separator = config.separator;
+        prefix = config.prefix;
+        suffix = config.suffix;
         format = new DecimalFormat(config.numberFormat);
     }
 
