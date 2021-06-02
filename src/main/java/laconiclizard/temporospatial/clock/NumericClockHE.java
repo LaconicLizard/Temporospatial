@@ -20,7 +20,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class NumericClockHE extends TSHudElement<NumericClock_Config> {
+public class NumericClockHE extends TSHudElement<NumericClockHE_Config> {
 
     public static final InstanceTracker<NumericClockHE> INSTANCES = new InstanceTracker<>();
     private static final long RANDOM_DATE_LOW, RANDOM_DATE_HIGH;
@@ -51,7 +51,7 @@ public class NumericClockHE extends TSHudElement<NumericClock_Config> {
     private long lastTime = -1;
     private String lastTimeString = null;
 
-    public NumericClockHE(NumericClock_Config config) {
+    public NumericClockHE(NumericClockHE_Config config) {
         super(config);
         updateFromConfig();
         INSTANCES.add(this);
@@ -126,7 +126,7 @@ public class NumericClockHE extends TSHudElement<NumericClock_Config> {
     }
 
     @Override public void saveAll() {
-        List<NumericClock_Config> configs;
+        List<NumericClockHE_Config> configs;
         synchronized (INSTANCES.lock) {
             configs = new ArrayList<>(INSTANCES.instances.size());
             for (NumericClockHE cw : INSTANCES.instances) {
@@ -153,12 +153,7 @@ public class NumericClockHE extends TSHudElement<NumericClock_Config> {
     }
 
     @Override public void render(MatrixStack matrices, float tickDelta) {
-        float x = getX(), y = getY(), w = getWidth(), h = getHeight();
-        Util.scaleAbout(x, y, 0, scale, scale, 1);
-        laconiclizard.hudelements.Util.fill(matrices.peek().getModel(), x, y, x + w, y + h, backgroundColor);  // background
-        MinecraftClient.getInstance().textRenderer.draw(matrices, getTime(), x, y, textColor);  // text
-        laconiclizard.hudelements.Util.drawBorder(matrices, x, y, x + w, y + h, borderThickness, borderColor);  // border
-        Util.scaleAbout(x, y, 0, 1 / scale, 1 / scale, 1);
+        Util.drawTextWithFrills(matrices, scale, getTime(), getX(), getY(), textColor, backgroundColor, borderThickness, borderColor);
     }
 
     @Override public float getWidth() {
@@ -188,7 +183,7 @@ public class NumericClockHE extends TSHudElement<NumericClock_Config> {
             Temporospatial.NUMERIC_CLOCK_CONFIG_HOLDER.value.load();
         }
         MinecraftClient.getInstance().openScreen(
-                AutoConfig.getConfigScreen(NumericClock_Config.class,
+                AutoConfig.getConfigScreen(NumericClockHE_Config.class,
                         Temporospatial.NUMERIC_CLOCK_CONFIG_SERIALIZER.returnScreen(new AlterHudScreen()))
                         .get());
     }

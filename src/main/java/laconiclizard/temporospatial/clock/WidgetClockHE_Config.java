@@ -6,7 +6,7 @@ import me.shedaniel.autoconfig.annotation.Config;
 
 /** Config for a WidgetClockHE. */
 @Config(name = Temporospatial.MOD_ID + "-internal-WidgetClock")
-public class WidgetClock_Config extends InstanceConfig<WidgetClock_Config> {
+public class WidgetClockHE_Config extends InstanceConfig<WidgetClockHE_Config> {
 
     public boolean enabled = false;
     public float x, y, z;
@@ -15,11 +15,11 @@ public class WidgetClock_Config extends InstanceConfig<WidgetClock_Config> {
     public boolean preventSwing = true;
     public boolean worksEverywhere = true;
 
-    @Override public WidgetClock_Config newInstance() {
-        return new WidgetClock_Config();
+    @Override public WidgetClockHE_Config newInstance() {
+        return new WidgetClockHE_Config();
     }
 
-    public void load(WidgetClock_Config src) {
+    public void load(WidgetClockHE_Config src) {
         enabled = src.enabled;
         x = src.x;
         y = src.y;

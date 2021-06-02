@@ -5,7 +5,7 @@ import laconiclizard.temporospatial.util.InstanceConfig;
 import me.shedaniel.autoconfig.annotation.Config;
 
 @Config(name = Temporospatial.MOD_ID + "-internal-WidgetCompass")
-public class WidgetCompass_Config extends InstanceConfig<WidgetCompass_Config> {
+public class WidgetCompassHE_Config extends InstanceConfig<WidgetCompassHE_Config> {
 
     public boolean enabled;
     public float x, y, z;
@@ -16,14 +16,14 @@ public class WidgetCompass_Config extends InstanceConfig<WidgetCompass_Config> {
     public String targetDimension = "";
     public int targetX, targetY, targetZ;
 
-    public WidgetCompass_Config() {
+    public WidgetCompassHE_Config() {
     }
 
-    @Override public WidgetCompass_Config newInstance() {
-        return new WidgetCompass_Config();
+    @Override public WidgetCompassHE_Config newInstance() {
+        return new WidgetCompassHE_Config();
     }
 
-    public void load(WidgetCompass_Config src) {
+    public void load(WidgetCompassHE_Config src) {
         enabled = src.enabled;
         x = src.x;
         y = src.y;

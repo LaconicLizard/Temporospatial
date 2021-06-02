@@ -18,13 +18,13 @@ import net.minecraft.util.math.BlockPos;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WidgetCompassHE extends TSHudElement<WidgetCompass_Config> {
+public class WidgetCompassHE extends TSHudElement<WidgetCompassHE_Config> {
 
     public static final InstanceTracker<WidgetCompassHE> INSTANCES = new InstanceTracker<>();
 
     private final ItemStack compassStack = new ItemStack(Items.COMPASS);
 
-    public WidgetCompassHE(WidgetCompass_Config config) {
+    public WidgetCompassHE(WidgetCompassHE_Config config) {
         super(config);
         updateFromConfig();
         INSTANCES.add(this);
@@ -55,7 +55,7 @@ public class WidgetCompassHE extends TSHudElement<WidgetCompass_Config> {
     }
 
     @Override public void saveAll() {
-        List<WidgetCompass_Config> configs;
+        List<WidgetCompassHE_Config> configs;
         synchronized (INSTANCES.lock) {
             configs = new ArrayList<>(INSTANCES.instances.size());
             for (WidgetCompassHE cw : INSTANCES.instances) {
@@ -107,7 +107,7 @@ public class WidgetCompassHE extends TSHudElement<WidgetCompass_Config> {
             Temporospatial.WIDGET_COMPASS_CONFIG_HOLDER.value.load();
         }
         MinecraftClient.getInstance().openScreen(
-                AutoConfig.getConfigScreen(WidgetCompass_Config.class,
+                AutoConfig.getConfigScreen(WidgetCompassHE_Config.class,
                         Temporospatial.WIDGET_COMPASS_CONFIG_SERIALIZER.returnScreen(new AlterHudScreen()))
                         .get());
     }

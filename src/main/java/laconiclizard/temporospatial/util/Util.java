@@ -1,10 +1,13 @@
 package laconiclizard.temporospatial.util;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Matrix4f;
 
 import java.util.function.Supplier;
 
@@ -51,12 +54,16 @@ public class Util {
         return result;
     }
 
-    /** Draw a border around the defined rectangle. */
-    public static void drawBorder(MatrixStack matrices, int x, int y, int w, int h, int thickness, int color) {
-        DrawableHelper.fill(matrices, x - thickness, y - thickness, x, y + h + thickness, color);
-        DrawableHelper.fill(matrices, x + w, y - thickness, x + w + thickness, y + h + thickness, color);
-        DrawableHelper.fill(matrices, x, y - thickness, x + w, y, color);
-        DrawableHelper.fill(matrices, x, y + h, x + w, y + h + thickness, color);
+    /** Draw the given text with a background and border. */
+    public static void drawTextWithFrills(MatrixStack stack, float scale, String text, float x, float y,
+                                          int textColor, int backgroundColor, float borderThickness, int borderColor) {
+        scaleAbout(x, y, 0, scale, scale, 1);
+        TextRenderer tr = MinecraftClient.getInstance().textRenderer;
+        float w = tr.getWidth(text), h = tr.fontHeight;
+        laconiclizard.hudelements.Util.fill(stack.peek().getModel(), x, y, x + w, y + h, backgroundColor);
+        tr.draw(stack, text, x, y, textColor);
+        laconiclizard.hudelements.Util.drawBorder(stack, x, y, x + w, y + h, borderThickness, borderColor);
+        scaleAbout(x, y, 0, 1 / scale, 1 / scale, 1);
     }
 
 }

@@ -1,8 +1,9 @@
 package laconiclizard.temporospatial;
 
-import laconiclizard.temporospatial.clock.WidgetClock_Config;
-import laconiclizard.temporospatial.clock.NumericClock_Config;
-import laconiclizard.temporospatial.compass.WidgetCompass_Config;
+import laconiclizard.temporospatial.clock.WidgetClockHE_Config;
+import laconiclizard.temporospatial.clock.NumericClockHE_Config;
+import laconiclizard.temporospatial.compass.CoordHE_Config;
+import laconiclizard.temporospatial.compass.WidgetCompassHE_Config;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
 
@@ -12,9 +13,10 @@ import java.util.List;
 @Config(name = Temporospatial.MOD_ID)
 public class TSConfig implements ConfigData {
 
-    public List<WidgetClock_Config> widgetClocks = new ArrayList<>();
-    public List<NumericClock_Config> numericClocks = new ArrayList<>();
-    public List<WidgetCompass_Config> widgetCompasses = new ArrayList<>();
+    public List<WidgetClockHE_Config> widgetClocks = new ArrayList<>();
+    public List<NumericClockHE_Config> numericClocks = new ArrayList<>();
+    public List<WidgetCompassHE_Config> widgetCompasses = new ArrayList<>();
+    public List<CoordHE_Config> coordDisplays = new ArrayList<>();
 
     // globals
     public boolean allClocks_preventSwing = false;

@@ -1,37 +1,32 @@
 package laconiclizard.temporospatial.clock;
 
 import laconiclizard.temporospatial.Temporospatial;
-import laconiclizard.temporospatial.util.InstanceConfig;
+import laconiclizard.temporospatial.util.InstanceConfig_TextHE;
 import me.shedaniel.autoconfig.annotation.Config;
 
 @Config(name = Temporospatial.MOD_ID + "-internal-NumericClock")
-public class NumericClock_Config extends InstanceConfig<NumericClock_Config> {
+public class NumericClockHE_Config extends InstanceConfig_TextHE<NumericClockHE_Config> {
 
     public boolean enabled = false;
     public float x, y, z;
     public float scale = 1f;
     public boolean worksEverywhere = false;
-    public int textColor = 0xffffff, backgroundColor = 0x40000000, borderColor = 0x40ffffff;
-    public float borderThickness = 1;
     public boolean realTime = false;
     public String realTimeFormat = "HH:mm:ssaa";
     public boolean minecraftTime_isAbsolute = false;
     public boolean absoluteMinecraftTime_separateDays = true;
 
-    @Override public NumericClock_Config newInstance() {
-        return new NumericClock_Config();
+    @Override public NumericClockHE_Config newInstance() {
+        return new NumericClockHE_Config();
     }
 
-    public void load(NumericClock_Config src) {
+    public void load(NumericClockHE_Config src) {
+        super.load(src);
         enabled = src.enabled;
         x = src.x;
         y = src.y;
         z = src.z;
         scale = src.scale;
-        textColor = src.textColor;
-        backgroundColor = src.backgroundColor;
-        borderColor = src.borderColor;
-        borderThickness = src.borderThickness;
         realTime = src.realTime;
         realTimeFormat = src.realTimeFormat;
         minecraftTime_isAbsolute = src.minecraftTime_isAbsolute;

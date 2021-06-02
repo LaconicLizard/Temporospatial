@@ -15,13 +15,13 @@ import net.minecraft.item.Items;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WidgetClockHE extends TSHudElement<WidgetClock_Config> {
+public class WidgetClockHE extends TSHudElement<WidgetClockHE_Config> {
 
     public static final InstanceTracker<WidgetClockHE> INSTANCES = new InstanceTracker<>();
 
     private final ItemStack clockStack = new ItemStack(Items.CLOCK);
 
-    public WidgetClockHE(WidgetClock_Config config) {
+    public WidgetClockHE(WidgetClockHE_Config config) {
         super(config);
         updateFromConfig();
         INSTANCES.add(this);
@@ -43,7 +43,7 @@ public class WidgetClockHE extends TSHudElement<WidgetClock_Config> {
     }
 
     @Override public void saveAll() {
-        List<WidgetClock_Config> configs;
+        List<WidgetClockHE_Config> configs;
         synchronized (INSTANCES.lock) {
             configs = new ArrayList<>(INSTANCES.instances.size());
             for (WidgetClockHE cw : INSTANCES.instances) {
@@ -95,7 +95,7 @@ public class WidgetClockHE extends TSHudElement<WidgetClock_Config> {
             Temporospatial.WIDGET_CLOCK_CONFIG_HOLDER.value.load();
         }
         MinecraftClient.getInstance().openScreen(
-                AutoConfig.getConfigScreen(WidgetClock_Config.class,
+                AutoConfig.getConfigScreen(WidgetClockHE_Config.class,
                         Temporospatial.WIDGET_CLOCK_CONFIG_SERIALIZER.returnScreen(new AlterHudScreen()))
                         .get());
     }
