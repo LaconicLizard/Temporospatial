@@ -6,19 +6,19 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.LiteralText;
 
-public class InstanceConfigSerializer<T extends TSHudElement<C>, C extends InstanceConfig_HE<C>> implements ConfigSerializer<C> {
+public class HEConfigSerializer<T extends TSHudElement<C>, C extends HEConfig<C>> implements ConfigSerializer<C> {
 
     private final Object lock = new Object();
     private T backer = null;
     private final C defaultConfig;
 
-    public InstanceConfigSerializer(C defaultConfig) {
+    public HEConfigSerializer(C defaultConfig) {
         this.defaultConfig = defaultConfig;
     }
 
     /** Function to pass into AutoConfig.register(...). */
-    public InstanceConfigSerializer<T, C> registrationFunction(@SuppressWarnings("unused") Config definition,
-                                                               @SuppressWarnings("unused") Class<C> configClass) {
+    public HEConfigSerializer<T, C> registrationFunction(@SuppressWarnings("unused") Config definition,
+                                                         @SuppressWarnings("unused") Class<C> configClass) {
         return this;
     }
 
@@ -26,7 +26,7 @@ public class InstanceConfigSerializer<T extends TSHudElement<C>, C extends Insta
     public void setBacker(T backer) {
         synchronized (lock) {
             if (this.backer != null && backer != null) {
-                throw new AssertionError("Concurrent modification of InstanceConfigSerializer.backer: "
+                throw new AssertionError("Concurrent modification of HEConfigSerializer.backer: "
                         + this + " // " + this.backer + "to" + backer);
             }
             this.backer = backer;

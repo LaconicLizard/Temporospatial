@@ -1,12 +1,15 @@
 package laconiclizard.temporospatial.util;
 
-public abstract class InstanceConfig_TextHE<T extends InstanceConfig_TextHE<T>> extends InstanceConfig_HE<T> {
+public class TextConfigData implements GenericConfig<TextConfigData> {
 
     public int textColor = 0xffffff, backgroundColor = 0x40000000, borderColor = 0x40ffffff;
-    public int borderThickness = 1;
+    public float borderThickness = 1;
 
-    @Override public void load(T src) {
-        super.load(src);
+    @Override public TextConfigData newInstance() {
+        return new TextConfigData();
+    }
+
+    @Override public void load(TextConfigData src) {
         textColor = src.textColor;
         backgroundColor = src.backgroundColor;
         borderColor = src.borderColor;

@@ -35,12 +35,11 @@ public class NumericClockHE extends TSTextHudElement<NumericClockHE_Config> {
 
     private static final ThreadLocalRandom RANDOM = ThreadLocalRandom.current();
 
-    // local copies of config settings
-    private boolean realTime;
-    private String realTimeFormatString;
-    private boolean minecraftTime_isAbsolute;
-    private boolean absoluteMinecraftTime_separateDays;
-    private boolean worksEverywhere;
+    private boolean cachedConfig_realTime;
+    private String cachedConfig_realTimeFormatString;
+    private boolean cachedConfig_minecraftTime_isAbsolute;
+    private boolean cachedConfig_absoluteMinecraftTime_separateDays;
+    private boolean cachedConfig_worksEverywhere;
 
     private DateFormat realTimeFormat;
 
@@ -56,21 +55,21 @@ public class NumericClockHE extends TSTextHudElement<NumericClockHE_Config> {
      */
     public void updateFromConfig() {
         super.updateFromConfig();
-        realTime = config.realTime;
-        realTimeFormatString = config.realTimeFormat;
-        realTimeFormat = new SimpleDateFormat(realTimeFormatString);
-        minecraftTime_isAbsolute = config.minecraftTime_isAbsolute;
-        absoluteMinecraftTime_separateDays = config.absoluteMinecraftTime_separateDays;
-        worksEverywhere = config.worksEverywhere;
+        cachedConfig_realTime = config.realTime;
+        cachedConfig_realTimeFormatString = config.realTimeFormat;
+        realTimeFormat = new SimpleDateFormat(cachedConfig_realTimeFormatString);
+        cachedConfig_minecraftTime_isAbsolute = config.minecraftTime_isAbsolute;
+        cachedConfig_absoluteMinecraftTime_separateDays = config.absoluteMinecraftTime_separateDays;
+        cachedConfig_worksEverywhere = config.worksEverywhere;
     }
 
     @Override public String generateText() {
         ClientWorld w = MinecraftClient.getInstance().world;
         if (w == null) return "";
         long currentTime = w.getTimeOfDay();
-        final boolean works = w.getDimension().isNatural() || worksEverywhere;
+        final boolean works = w.getDimension().isNatural() || cachedConfig_worksEverywhere;
 
-        if (realTime) {
+        if (cachedConfig_realTime) {
             Date d;
             if (works) {
                 d = new Date();
@@ -82,8 +81,8 @@ public class NumericClockHE extends TSTextHudElement<NumericClockHE_Config> {
             if (!works) {
                 currentTime = RANDOM.nextInt(24000 * 100);
             }
-            if (minecraftTime_isAbsolute) {
-                if (absoluteMinecraftTime_separateDays) {
+            if (cachedConfig_minecraftTime_isAbsolute) {
+                if (cachedConfig_absoluteMinecraftTime_separateDays) {
                     return currentTime / 24000 + "d " + currentTime % 24000 + "t";
                 } else {
                     return String.valueOf(currentTime);
@@ -118,10 +117,10 @@ public class NumericClockHE extends TSTextHudElement<NumericClockHE_Config> {
     @Override public float getWidth() {
         // dev note: override so times like "128" keep left-padded space without zeros
         TextRenderer tr = MinecraftClient.getInstance().textRenderer;
-        if (realTime) {
-            return tr.getWidth(realTimeFormatString);
+        if (cachedConfig_realTime) {
+            return tr.getWidth(cachedConfig_realTimeFormatString);
         } else {
-            if (minecraftTime_isAbsolute) {
+            if (cachedConfig_minecraftTime_isAbsolute) {
                 return tr.getWidth(getText());
             } else {
                 return tr.getWidth("23999");

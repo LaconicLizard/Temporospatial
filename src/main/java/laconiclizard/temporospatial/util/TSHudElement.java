@@ -2,7 +2,7 @@ package laconiclizard.temporospatial.util;
 
 import laconiclizard.hudelements.api.HudElement;
 
-public abstract class TSHudElement<C extends InstanceConfig_HE<C>> extends HudElement {
+public abstract class TSHudElement<C extends HEConfig<C>> extends HudElement {
 
     // if true, then this will disable itself upon exiting /alterhud
     private boolean disableOnExitAlterHud = false;
@@ -22,11 +22,12 @@ public abstract class TSHudElement<C extends InstanceConfig_HE<C>> extends HudEl
      * Assumes .lock has already been acquired.
      */
     public void updateFromConfig() {
-        setEnabled(config.enabled);
-        setX(config.x);
-        setY(config.y);
-        setZ(config.z);
-        cachedConfig_scale = config.scale;
+        HEConfigData hcd = config.heConfigData();
+        setEnabled(hcd.enabled);
+        setX(hcd.x);
+        setY(hcd.y);
+        setZ(hcd.z);
+        cachedConfig_scale = hcd.scale;
     }
 
     /**
@@ -36,8 +37,9 @@ public abstract class TSHudElement<C extends InstanceConfig_HE<C>> extends HudEl
     public abstract void saveAll();
 
     @Override public void save() {
-        config.x = getX();
-        config.y = getY();
+        HEConfigData hcd = config.heConfigData();
+        hcd.x = getX();
+        hcd.y = getY();
         saveAll();
     }
 

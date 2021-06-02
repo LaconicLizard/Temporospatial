@@ -4,7 +4,7 @@ import laconiclizard.hudelements.api.HudElement;
 import laconiclizard.temporospatial.clock.*;
 import laconiclizard.temporospatial.compass.*;
 import laconiclizard.temporospatial.mixin.ModelPredicateProviderRegistry_Mixin;
-import laconiclizard.temporospatial.util.InstanceConfigSerializer;
+import laconiclizard.temporospatial.util.HEConfigSerializer;
 import laconiclizard.temporospatial.util.InstanceTracker;
 import laconiclizard.temporospatial.util.SyncHolder;
 import laconiclizard.temporospatial.util.TSHudElement;
@@ -29,28 +29,28 @@ public class Temporospatial implements ModInitializer {
 
     // hud element config stuff
 
-    public static final InstanceConfigSerializer<WidgetClockHE, WidgetClockHE_Config> WIDGET_CLOCK_CONFIG_SERIALIZER
-            = new InstanceConfigSerializer<>(new WidgetClockHE_Config());
+    public static final HEConfigSerializer<WidgetClockHE, WidgetClockHE_Config> WIDGET_CLOCK_CONFIG_SERIALIZER
+            = new HEConfigSerializer<>(new WidgetClockHE_Config());
     public static final SyncHolder<ConfigHolder<WidgetClockHE_Config>> WIDGET_CLOCK_CONFIG_HOLDER
             = new SyncHolder<>(AutoConfig.register(WidgetClockHE_Config.class, WIDGET_CLOCK_CONFIG_SERIALIZER::registrationFunction));
 
-    public static final InstanceConfigSerializer<NumericClockHE, NumericClockHE_Config> NUMERIC_CLOCK_CONFIG_SERIALIZER
-            = new InstanceConfigSerializer<>(new NumericClockHE_Config());
+    public static final HEConfigSerializer<NumericClockHE, NumericClockHE_Config> NUMERIC_CLOCK_CONFIG_SERIALIZER
+            = new HEConfigSerializer<>(new NumericClockHE_Config());
     public static final SyncHolder<ConfigHolder<NumericClockHE_Config>> NUMERIC_CLOCK_CONFIG_HOLDER
             = new SyncHolder<>(AutoConfig.register(NumericClockHE_Config.class, NUMERIC_CLOCK_CONFIG_SERIALIZER::registrationFunction));
 
-    public static final InstanceConfigSerializer<WidgetCompassHE, WidgetCompassHE_Config> WIDGET_COMPASS_CONFIG_SERIALIZER
-            = new InstanceConfigSerializer<>(new WidgetCompassHE_Config());
+    public static final HEConfigSerializer<WidgetCompassHE, WidgetCompassHE_Config> WIDGET_COMPASS_CONFIG_SERIALIZER
+            = new HEConfigSerializer<>(new WidgetCompassHE_Config());
     public static final SyncHolder<ConfigHolder<WidgetCompassHE_Config>> WIDGET_COMPASS_CONFIG_HOLDER
             = new SyncHolder<>(AutoConfig.register(WidgetCompassHE_Config.class, WIDGET_COMPASS_CONFIG_SERIALIZER::registrationFunction));
 
-    public static final InstanceConfigSerializer<CoordHE, CoordHE_Config> COORD_HE_CONFIG_SERIALIZER
-            = new InstanceConfigSerializer<>(new CoordHE_Config());
+    public static final HEConfigSerializer<CoordHE, CoordHE_Config> COORD_HE_CONFIG_SERIALIZER
+            = new HEConfigSerializer<>(new CoordHE_Config());
     public static final SyncHolder<ConfigHolder<CoordHE_Config>> COORD_HE_CONFIG_HOLDER
             = new SyncHolder<>(AutoConfig.register(CoordHE_Config.class, COORD_HE_CONFIG_SERIALIZER::registrationFunction));
 
-    public static final InstanceConfigSerializer<AnglesHE, AnglesHE_Config> ANGLES_HE_CONFIG_SERIALIZER
-            = new InstanceConfigSerializer<>(new AnglesHE_Config());
+    public static final HEConfigSerializer<AnglesHE, AnglesHE_Config> ANGLES_HE_CONFIG_SERIALIZER
+            = new HEConfigSerializer<>(new AnglesHE_Config());
     public static final SyncHolder<ConfigHolder<AnglesHE_Config>> ANGLES_HE_CONFIG_HOLDER
             = new SyncHolder<>(AutoConfig.register(AnglesHE_Config.class, ANGLES_HE_CONFIG_SERIALIZER::registrationFunction));
 
@@ -90,18 +90,18 @@ public class Temporospatial implements ModInitializer {
                 for (InstanceTracker<? extends TSHudElement<?>> tracker : INSTANCE_TRACKERS) {
                     synchronized (tracker.lock) {
                         for (TSHudElement<?> he : tracker.instances) {
-                            he.config.enabled = false;
+                            he.config.heConfigData().enabled = false;
                             he.updateFromConfig();
                         }
                     }
                     tracker.instances.clear();
                 }
                 // load new hud elements
-                for (WidgetClockHE_Config cwc : config.widgetClocks) {
-                    new WidgetClockHE(cwc);
+                for (WidgetClockHE_Config c : config.widgetClocks) {
+                    new WidgetClockHE(c);
                 }
-                for (NumericClockHE_Config ncc : config.numericClocks) {
-                    new NumericClockHE(ncc);
+                for (NumericClockHE_Config c : config.numericClocks) {
+                    new NumericClockHE(c);
                 }
                 for (WidgetCompassHE_Config c : config.widgetCompasses) {
                     new WidgetCompassHE(c);

@@ -1,11 +1,16 @@
 package laconiclizard.temporospatial.compass;
 
 import laconiclizard.temporospatial.Temporospatial;
-import laconiclizard.temporospatial.util.InstanceConfig_HE;
+import laconiclizard.temporospatial.util.HEConfig;
+import laconiclizard.temporospatial.util.HEConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
+import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
 @Config(name = Temporospatial.MOD_ID + "-internal-WidgetCompass")
-public class WidgetCompassHE_Config extends InstanceConfig_HE<WidgetCompassHE_Config> {
+public class WidgetCompassHE_Config implements HEConfig<WidgetCompassHE_Config> {
+
+    @ConfigEntry.Gui.TransitiveObject
+    public HEConfigData heConfigData = new HEConfigData();
 
     public boolean preventSwing = true;
     public boolean worksEverywhere = true;
@@ -13,7 +18,8 @@ public class WidgetCompassHE_Config extends InstanceConfig_HE<WidgetCompassHE_Co
     public String targetDimension = "";
     public int targetX, targetY, targetZ;
 
-    public WidgetCompassHE_Config() {
+    @Override public HEConfigData heConfigData() {
+        return heConfigData;
     }
 
     @Override public WidgetCompassHE_Config newInstance() {
@@ -21,7 +27,7 @@ public class WidgetCompassHE_Config extends InstanceConfig_HE<WidgetCompassHE_Co
     }
 
     public void load(WidgetCompassHE_Config src) {
-        super.load(src);
+        heConfigData.load(src.heConfigData);
         preventSwing = src.preventSwing;
         worksEverywhere = src.worksEverywhere;
         targetMode = src.targetMode;

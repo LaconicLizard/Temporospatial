@@ -4,7 +4,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 
-public abstract class TSTextHudElement<C extends InstanceConfig_TextHE<C>> extends TSHudElement<C> {
+public abstract class TSTextHudElement<C extends HEConfig<C> & TextConfig<C>> extends TSHudElement<C> {
 
     protected int cachedConfig_textColor, cachedConfig_backgroundColor, cachedConfig_borderColor;
     protected float cachedConfig_borderThickness;
@@ -34,10 +34,11 @@ public abstract class TSTextHudElement<C extends InstanceConfig_TextHE<C>> exten
 
     @Override public void updateFromConfig() {
         super.updateFromConfig();
-        cachedConfig_textColor = config.textColor;
-        cachedConfig_backgroundColor = config.backgroundColor;
-        cachedConfig_borderColor = config.borderColor;
-        cachedConfig_borderThickness = config.borderThickness;
+        TextConfigData tcd = config.textConfigData();
+        cachedConfig_textColor = tcd.textColor;
+        cachedConfig_backgroundColor = tcd.backgroundColor;
+        cachedConfig_borderColor = tcd.borderColor;
+        cachedConfig_borderThickness = tcd.borderThickness;
     }
 
     @Override public void render(MatrixStack matrices, float tickDelta) {

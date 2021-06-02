@@ -2,17 +2,17 @@ package laconiclizard.temporospatial.util;
 
 import me.shedaniel.autoconfig.ConfigData;
 
-public abstract class InstanceConfig<T extends InstanceConfig<T>> implements ConfigData {
+public interface GenericConfig<T extends GenericConfig<T>> extends ConfigData {
 
-    public abstract T newInstance();
+    T newInstance();
 
-    public T copy() {
+    void load(T src);
+
+    default T copy() {
         T result = newInstance();
         //noinspection unchecked
         result.load((T) this);
         return result;
     }
-
-    public abstract void load(T src);
 
 }
