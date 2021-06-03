@@ -4,6 +4,7 @@ import laconiclizard.temporospatial.clock.WidgetClockHE_Config;
 import laconiclizard.temporospatial.clock.NumericClockHE_Config;
 import laconiclizard.temporospatial.compass.AnglesHE_Config;
 import laconiclizard.temporospatial.compass.CoordHE_Config;
+import laconiclizard.temporospatial.compass.DistanceHE_Config;
 import laconiclizard.temporospatial.compass.WidgetCompassHE_Config;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
@@ -25,6 +26,8 @@ public class TSConfig implements ConfigData {
     public List<CoordHE_Config> coordDisplays = new ArrayList<>();
     @ConfigEntry.Gui.Excluded
     public List<AnglesHE_Config> anglesDisplays = new ArrayList<>();
+    @ConfigEntry.Gui.Excluded
+    public List<DistanceHE_Config> distanceDisplays = new ArrayList<>();
 
     // globals
     public boolean allClocks_preventSwing = false;

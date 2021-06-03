@@ -4,10 +4,7 @@ import laconiclizard.hudelements.api.HudElement;
 import laconiclizard.temporospatial.clock.*;
 import laconiclizard.temporospatial.compass.*;
 import laconiclizard.temporospatial.mixin.ModelPredicateProviderRegistry_Mixin;
-import laconiclizard.temporospatial.util.HEConfigSerializer;
-import laconiclizard.temporospatial.util.InstanceTracker;
-import laconiclizard.temporospatial.util.SyncHolder;
-import laconiclizard.temporospatial.util.TSHudElement;
+import laconiclizard.temporospatial.util.*;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.ConfigHolder;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
@@ -54,9 +51,14 @@ public class Temporospatial implements ModInitializer {
     public static final SyncHolder<ConfigHolder<AnglesHE_Config>> ANGLES_HE_CONFIG_HOLDER
             = new SyncHolder<>(AutoConfig.register(AnglesHE_Config.class, ANGLES_HE_CONFIG_SERIALIZER::registrationFunction));
 
+    public static final HEConfigSerializer<DistanceHE, DistanceHE_Config> DISTANCE_HE_CONFIG_SERIALIZER
+            = new HEConfigSerializer<>(new DistanceHE_Config());
+    public static final SyncHolder<ConfigHolder<DistanceHE_Config>> DISTANCE_HE_CONFIG_HOLDER
+            = new SyncHolder<>(AutoConfig.register(DistanceHE_Config.class, DISTANCE_HE_CONFIG_SERIALIZER::registrationFunction));
+
     public static final List<InstanceTracker<? extends TSHudElement<?>>> INSTANCE_TRACKERS
             = Arrays.asList(WidgetClockHE.INSTANCES, NumericClockHE.INSTANCES, WidgetCompassHE.INSTANCES,
-            CoordHE.INSTANCES, AnglesHE.INSTANCES);
+            CoordHE.INSTANCES, AnglesHE.INSTANCES, DistanceHE.INSTANCES);
 
     static {
         // enable all of our hud elements when in the /alterhud screen
@@ -107,6 +109,9 @@ public class Temporospatial implements ModInitializer {
         for (AnglesHE_Config c : config.anglesDisplays) {
             new AnglesHE(c);
         }
+        for (DistanceHE_Config c : config.distanceDisplays) {
+            new DistanceHE(c);
+        }
         // globals
         Clock_MPP.PREVENT_SWING.setAllFlagged(config.allClocks_preventSwing);
         Clock_MPP.WORK_EVERYWHERE.setAllFlagged(config.allClocks_workEverywhere);
@@ -130,11 +135,11 @@ public class Temporospatial implements ModInitializer {
                 return ActionResult.PASS;
             });
             CONFIG_HOLDER.value.load();
-//            AnglesHE he = new AnglesHE(new AnglesHE_Config());
-//            he.config.enabled = true;
-//            he.updateFromConfig();
-//            he.save();
-//            CONFIG_HOLDER.value.load();
+            DistanceHE he = new DistanceHE(new DistanceHE_Config());
+            he.config.heConfigData.enabled = true;
+            he.updateFromConfig();
+            he.save();
+            CONFIG_HOLDER.value.load();
         }
     }
 
